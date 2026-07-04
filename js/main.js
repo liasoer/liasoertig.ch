@@ -6,6 +6,27 @@
 (function () {
   "use strict";
 
+  /* ---------- Asset cache-busting ---------------------------------------
+     Local image assets (posters, etc.) are referenced by plain path, so
+     browsers and Cloudflare's edge cache can keep serving old bytes under
+     the same URL indefinitely after we swap a file's contents — unlike
+     css/js, which already carry a "?v=" query bumped on every change. We
+     piggyback on that same version number (read off this very <script>
+     tag's own src) so local image URLs get busted automatically too,
+     without a second version counter to keep in sync by hand. External
+     URLs (CDN photos, YouTube thumbnails) are left untouched. */
+  const ASSET_V = (function () {
+    try {
+      const el = document.currentScript || document.querySelector('script[src*="main.js"]');
+      const m = el && el.src.match(/[?&]v=([^&]+)/);
+      return m ? m[1] : "";
+    } catch (e) { return ""; }
+  })();
+  function cacheBust(url) {
+    if (!url || /^https?:\/\//i.test(url) || !ASSET_V) return url;
+    return url + (url.includes("?") ? "&" : "?") + "v=" + ASSET_V;
+  }
+
   /* ---------- Dark mode ---------- */
   const THEME_KEY = "lo-theme";
   function applyTheme(theme) {
@@ -161,7 +182,7 @@
         return `
         <article class="card" data-index="${i}" tabindex="0" role="button" aria-label="View ${item.title}">
           <div class="card-media">
-            <img src="${item.cover}" alt="${item.title}" loading="lazy" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault','hqdefault');">
+            <img src="${cacheBust(item.cover)}" alt="${item.title}" loading="lazy" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault','hqdefault');">
             <span class="tag card-tag">${tag}</span>
             <div class="card-title-glass">
               <div class="card-title-glass-row">
@@ -261,7 +282,7 @@
 
   function lbRender() {
     const img = lightboxEl.querySelector("img");
-    img.src = lbImages[lbIndex];
+    img.src = cacheBust(lbImages[lbIndex]);
     lightboxEl.querySelector(".lightbox-count").textContent = (lbIndex + 1) + " / " + lbImages.length;
   }
   function lbStep(dir) {
@@ -351,7 +372,7 @@
     el.innerHTML = item.images
       .map(
         (src, i) =>
-          `<button data-i="${i}" aria-label="Open photo ${i + 1}"><img src="${src}" alt="" loading="lazy"></button>`
+          `<button data-i="${i}" aria-label="Open photo ${i + 1}"><img src="${cacheBust(src)}" alt="" loading="lazy"></button>`
       )
       .join("");
     el.querySelectorAll("button").forEach((b) =>
@@ -538,7 +559,7 @@
       <div class="video-item">
         ${countBadge}
         <div class="video-player">
-          <video playsinline poster="${v.poster || item.cover}" preload="metadata">
+          <video playsinline poster="${cacheBust(v.poster || item.cover)}" preload="metadata">
             <source src="${v.src}" type="video/mp4">
           </video>
           <div class="vp-center">
@@ -694,12 +715,12 @@
       lwRight && lwRight.classList.add("show");
       if (flashCard) {
         flashCard.classList.add("show");
-        if (flashImg && covers[0]) flashImg.src = covers[0];
+        if (flashImg && covers[0]) flashImg.src = cacheBust(covers[0]);
       }
     }, 450);
     // Rapid-fire cut through the photos, like flipping through a stack.
     covers.forEach((src, i) => {
-      t(() => { if (flashImg) flashImg.src = src; }, 700 + i * FLASH_STEP);
+      t(() => { if (flashImg) flashImg.src = cacheBust(src); }, 700 + i * FLASH_STEP);
     });
     const flashEnd = 700 + covers.length * FLASH_STEP;
     // Card shrinks away — LIAS + OERTIG close the gap themselves as it collapses.
@@ -809,6 +830,22 @@
     // inline transforms below would fight the CSS horizontal-scroll layout.
     if (window.matchMedia("(max-width:700px)").matches) return;
 
+    // Scroll-mouse hint in the middle of each card: visible while the page
+    // is at rest, hidden the instant the user actually scrolls so it isn't
+    // fighting the slide animation, then faded back in once scrolling has
+    // genuinely settled again (not just between two scroll-event ticks).
+    const scrollHints = Array.from(document.querySelectorAll(".hero-scroll-hint"));
+    let hintTimer = null;
+    function hideHints() {
+      scrollHints.forEach((h) => h.classList.add("is-hidden"));
+    }
+    function scheduleHintShow() {
+      if (hintTimer) clearTimeout(hintTimer);
+      hintTimer = setTimeout(() => {
+        scrollHints.forEach((h) => h.classList.remove("is-hidden"));
+      }, 250);
+    }
+
     let ticking = false;
     let snapTimer = null;
 
@@ -857,6 +894,8 @@
         ticking = true;
         requestAnimationFrame(update);
       }
+      hideHints();
+      scheduleHintShow();
       scheduleSnap();
     }, { passive: true });
     window.addEventListener("resize", () => {
