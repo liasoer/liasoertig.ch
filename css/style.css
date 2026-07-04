@@ -217,8 +217,11 @@ body:has(.hero-pin) main{ padding-top:0; }
     background:rgba(var(--glass-rgb),0.92);
     backdrop-filter:blur(24px) saturate(180%);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
-    flex-direction:column; align-items:flex-start; gap:var(--sp-6);
-    padding:var(--sp-8) var(--sp-6);
+    /* Links sit bottom-right, near the thumb, instead of top-left — same
+       reasoning as the bottom navbar itself. */
+    flex-direction:column; align-items:flex-end; justify-content:flex-end;
+    gap:var(--sp-6);
+    padding:var(--sp-8) var(--sp-6) 100px;
     transform:translateX(100%);
     transition:transform var(--dur-med) var(--ease-ui);
     z-index:65;
@@ -227,6 +230,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   .mobile-nav a{
     font-family:var(--font-display);
     font-size:20px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em;
+    text-align:right;
     position:relative;
     color:var(--text-max); opacity:0.62;
   }
@@ -861,13 +865,13 @@ body.modal-locked{
    phone-shot clip gets a tall portrait box instead of a 16:9 letterbox. */
 .video-grid{
   display:flex; flex-wrap:wrap; gap:var(--sp-4);
-  justify-content:center;
+  justify-content:center; align-items:center;
 }
 /* Wraps the count badge + the player itself so the badge can sit above the
    clip instead of overlaid on top of it — video-player keeps its original
    sizing untouched, video-item just shrink-wraps around it. */
 .video-item{
-  display:flex; flex-direction:column; gap:var(--sp-2);
+  display:flex; flex-direction:column; align-items:center; gap:var(--sp-2);
   flex:0 0 auto; max-width:100%;
 }
 .video-player{

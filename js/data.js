@@ -123,6 +123,7 @@ const PROJECTS = [
     cover: "assets/posters/camillesophie-videos-cover.jpg",
     accent: ["#df7d5c", "#dfba5c", "#5c88df"],
     images: [],
+    videosCarousel: true,
     videos: [
       { title: "Reel 1", youtube: "0s_XTEDXass", portrait: true },
       { title: "Reel 2", youtube: "S1jCECFDiBU", portrait: true },

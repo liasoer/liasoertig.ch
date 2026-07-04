@@ -312,6 +312,30 @@
     );
   }
 
+  /* ---------- YouTube IFrame API (so embeds can stop each other too) ---------- */
+  // Loaded once, lazily, the first time a popup actually has a YouTube clip —
+  // lets us hear "this embed started playing" and tell every other player
+  // (embedded or local) to pause, instead of only coordinating our own
+  // custom <video> players.
+  let ytApiPromise = null;
+  function loadYouTubeApi() {
+    if (ytApiPromise) return ytApiPromise;
+    ytApiPromise = new Promise((resolve) => {
+      if (window.YT && window.YT.Player) { resolve(window.YT); return; }
+      const prevReady = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = function () {
+        if (typeof prevReady === "function") prevReady();
+        resolve(window.YT);
+      };
+      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+        const s = document.createElement("script");
+        s.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(s);
+      }
+    });
+    return ytApiPromise;
+  }
+
   /* ---------- Custom video player ---------- */
   function fmtTime(sec) {
     if (!isFinite(sec)) return "0:00";
@@ -448,31 +472,17 @@
         // YouTube-hosted clips just embed the standard player — no custom
         // controls to wire up, since YouTube brings its own.
         if (v.youtube) {
+          const ytId = `yt-player-${Date.now()}-${i}`;
           return `
       <div class="video-item">
         ${countBadge}
         <div class="video-player is-embed${v.portrait ? " is-portrait" : ""}">
           <iframe
-            src="https://www.youtube.com/embed/${v.youtube}?modestbranding=1&rel=0&iv_load_policy=3"
+            id="${ytId}"
+            src="https://www.youtube.com/embed/${v.youtube}?modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1"
             title="${v.title}"
             loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen></iframe>
-        </div>
-      </div>`;
-        }
-        // Mux-hosted clips (player.mux.com) — same idea, Mux's own player UI.
-        if (v.mux) {
-          const titleParam = encodeURIComponent(v.title || item.title || "");
-          return `
-      <div class="video-item">
-        ${countBadge}
-        <div class="video-player is-embed${v.portrait ? " is-portrait" : ""}">
-          <iframe
-            src="https://player.mux.com/${v.mux}?metadata-video-title=${titleParam}&video-title=${titleParam}"
-            title="${v.title}"
-            loading="lazy"
-            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
             allowfullscreen></iframe>
         </div>
       </div>`;
@@ -503,15 +513,39 @@
       createVideoPlayerController(cellEl)
     );
 
-    // Only one clip should ever be making noise at a time — starting one
-    // pauses the rest.
+    // Only one clip should ever be making noise at a time — starting any one
+    // (local <video> or a YouTube embed) pauses every other player in this
+    // popup, embedded or not.
+    const ytIframes = Array.from(gridEl.querySelectorAll("iframe[id^='yt-player-']"));
+    const ytHandles = [];
+    function stopAllExcept(activeHandle) {
+      activePlayers.forEach((h) => { if (h !== activeHandle) h.pause(); });
+      ytHandles.forEach((h) => { if (h !== activeHandle) h.pause(); });
+    }
+
     activePlayers.forEach((ctrl) => {
-      ctrl.video.addEventListener("play", () => {
-        activePlayers.forEach((other) => {
-          if (other !== ctrl) other.pause();
+      ctrl.video.addEventListener("play", () => stopAllExcept(ctrl));
+    });
+
+    if (ytIframes.length) {
+      loadYouTubeApi().then((YT) => {
+        ytIframes.forEach((iframe) => {
+          if (!document.getElementById(iframe.id)) return; // popup moved on already
+          try {
+            let handle;
+            const player = new YT.Player(iframe.id, {
+              events: {
+                onStateChange: (e) => {
+                  if (e.data === YT.PlayerState.PLAYING) stopAllExcept(handle);
+                },
+              },
+            });
+            handle = { pause() { try { player.pauseVideo(); } catch (e) {} } };
+            ytHandles.push(handle);
+          } catch (e) {}
         });
       });
-    });
+    }
   }
 
   function openGallery(item) {
@@ -554,7 +588,7 @@
     overlayEl.classList.remove("is-open");
     unlockScroll();
     activePlayers.forEach((ctrl) => ctrl.pause());
-    // Embeds (YouTube/Mux iframes) keep playing unless their src is cleared —
+    // Embeds (YouTube iframes) keep playing unless their src is cleared —
     // pausing only stops the plain <video> players above.
     overlayEl.querySelectorAll(".video-player.is-embed iframe").forEach((f) => {
       f.src = "about:blank";
@@ -646,6 +680,12 @@
     const heroVideos = Array.from(document.querySelectorAll(".hero-slide video"));
     heroVideos.forEach((v) => {
       v.muted = true;
+      // Some mobile browsers quietly defer the actual network fetch for an
+      // autoplaying video until the page shows "engagement" (a scroll/tap),
+      // even though the element is on-screen from the first paint. Forcing
+      // .load() explicitly (in addition to preload="auto") pushes the
+      // browser to start fetching right away instead of waiting for that.
+      v.load();
       v.play().catch(() => {});
     });
     // If the very first attempt was still blocked (some mobile browsers
