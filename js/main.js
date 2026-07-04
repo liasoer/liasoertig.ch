@@ -32,15 +32,18 @@
   });
 
   /* ---------- Mobile nav ---------- */
+  // .mobile-nav is a standalone element (sibling of .site-header), not the
+  // desktop .main-nav — see the comment above its CSS for why: nesting a
+  // fixed, fullscreen menu inside the backdrop-filter header breaks it.
   const navToggle = document.querySelector(".nav-toggle");
-  const mainNav = document.querySelector(".main-nav");
-  if (navToggle && mainNav) {
+  const mobileNav = document.querySelector(".mobile-nav");
+  if (navToggle && mobileNav) {
     navToggle.addEventListener("click", () => {
-      const open = mainNav.classList.toggle("is-open");
+      const open = mobileNav.classList.toggle("is-open");
       navToggle.setAttribute("aria-expanded", open ? "true" : "false");
     });
-    mainNav.querySelectorAll("a").forEach((a) =>
-      a.addEventListener("click", () => mainNav.classList.remove("is-open"))
+    mobileNav.querySelectorAll("a").forEach((a) =>
+      a.addEventListener("click", () => mobileNav.classList.remove("is-open"))
     );
   }
 
@@ -339,9 +342,22 @@
       playerEl.classList.toggle("is-paused", !isPlaying);
     }
 
+    // Requesting fullscreen has to happen inside the same user-gesture
+    // handler that starts playback — browsers reject a fullscreen request
+    // that isn't directly triggered by a click/tap.
+    function enterFullscreen() {
+      if (playerEl.requestFullscreen) playerEl.requestFullscreen().catch(() => {});
+      else if (playerEl.webkitRequestFullscreen) playerEl.webkitRequestFullscreen();
+      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+    }
+
     function togglePlay() {
-      if (video.paused) video.play();
-      else video.pause();
+      if (video.paused) {
+        video.play();
+        enterFullscreen();
+      } else {
+        video.pause();
+      }
     }
 
     playBig.addEventListener("click", togglePlay);
@@ -433,45 +449,51 @@
         // controls to wire up, since YouTube brings its own.
         if (v.youtube) {
           return `
-      <div class="video-player is-embed${v.portrait ? " is-portrait" : ""}">
+      <div class="video-item">
         ${countBadge}
-        <iframe
-          src="https://www.youtube.com/embed/${v.youtube}?modestbranding=1&rel=0&iv_load_policy=3"
-          title="${v.title}"
-          loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen></iframe>
+        <div class="video-player is-embed${v.portrait ? " is-portrait" : ""}">
+          <iframe
+            src="https://www.youtube.com/embed/${v.youtube}?modestbranding=1&rel=0&iv_load_policy=3"
+            title="${v.title}"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+        </div>
       </div>`;
         }
         // Mux-hosted clips (player.mux.com) — same idea, Mux's own player UI.
         if (v.mux) {
           const titleParam = encodeURIComponent(v.title || item.title || "");
           return `
-      <div class="video-player is-embed${v.portrait ? " is-portrait" : ""}">
+      <div class="video-item">
         ${countBadge}
-        <iframe
-          src="https://player.mux.com/${v.mux}?metadata-video-title=${titleParam}&video-title=${titleParam}"
-          title="${v.title}"
-          loading="lazy"
-          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
-          allowfullscreen></iframe>
+        <div class="video-player is-embed${v.portrait ? " is-portrait" : ""}">
+          <iframe
+            src="https://player.mux.com/${v.mux}?metadata-video-title=${titleParam}&video-title=${titleParam}"
+            title="${v.title}"
+            loading="lazy"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
       </div>`;
         }
         return `
-      <div class="video-player">
+      <div class="video-item">
         ${countBadge}
-        <video playsinline poster="${v.poster || item.cover}" preload="metadata">
-          <source src="${v.src}" type="video/mp4">
-        </video>
-        <div class="vp-center">
-          <button class="vp-play-big" aria-label="Play ${v.title}">${ICON_PLAY}</button>
-        </div>
-        <div class="vp-controls">
-          <button class="vp-btn vp-play" aria-label="Play/Pause">${ICON_PLAY}</button>
-          <span class="vp-time"><span class="vp-current">0:00</span> / <span class="vp-duration">0:00</span></span>
-          <input class="vp-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
-          <button class="vp-btn vp-mute" aria-label="Mute">${ICON_SOUND}</button>
-          <button class="vp-btn vp-fullscreen" aria-label="Fullscreen">${ICON_EXPAND}</button>
+        <div class="video-player">
+          <video playsinline poster="${v.poster || item.cover}" preload="metadata">
+            <source src="${v.src}" type="video/mp4">
+          </video>
+          <div class="vp-center">
+            <button class="vp-play-big" aria-label="Play ${v.title}">${ICON_PLAY}</button>
+          </div>
+          <div class="vp-controls">
+            <button class="vp-btn vp-play" aria-label="Play/Pause">${ICON_PLAY}</button>
+            <span class="vp-time"><span class="vp-current">0:00</span> / <span class="vp-duration">0:00</span></span>
+            <input class="vp-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
+            <button class="vp-btn vp-mute" aria-label="Mute">${ICON_SOUND}</button>
+            <button class="vp-btn vp-fullscreen" aria-label="Fullscreen">${ICON_EXPAND}</button>
+          </div>
         </div>
       </div>`;
       })

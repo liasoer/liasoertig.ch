@@ -201,8 +201,18 @@ body:has(.hero-pin) main{ padding-top:0; }
   main{ padding-top:0; padding-bottom:84px; }
 }
 
+/* The fullscreen mobile menu is a plain, standalone element — NOT nested
+   inside .site-header — on purpose. .site-header uses backdrop-filter,
+   which (like transform/filter) makes an element the containing block for
+   any position:fixed descendant. A fixed, inset:0 child of that header
+   would resolve "fullscreen" against the header's own small pill box
+   instead of the viewport, shrinking the menu down to almost nothing and
+   making it unusable. Keeping .mobile-nav a sibling of .site-header avoids
+   that trap entirely. */
 @media (max-width:760px){
-  .main-nav{
+  .main-nav{ display:none; }
+  .mobile-nav{
+    display:flex;
     position:fixed; inset:0;
     background:rgba(var(--glass-rgb),0.92);
     backdrop-filter:blur(24px) saturate(180%);
@@ -213,9 +223,21 @@ body:has(.hero-pin) main{ padding-top:0; }
     transition:transform var(--dur-med) var(--ease-ui);
     z-index:65;
   }
-  .main-nav.is-open{ transform:translateX(0); }
-  .main-nav a{ font-size:20px; }
+  .mobile-nav.is-open{ transform:translateX(0); }
+  .mobile-nav a{
+    font-family:var(--font-display);
+    font-size:20px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em;
+    position:relative;
+    color:var(--text-max); opacity:0.62;
+  }
+  .mobile-nav a:hover, .mobile-nav a.active{ opacity:1; }
+  .mobile-nav a.active::after{
+    content:''; position:absolute; left:0; right:0; bottom:-6px; height:2px; background:var(--accent-500); border-radius:2px;
+  }
   .nav-toggle{ display:flex; }
+}
+@media (min-width:761px){
+  .mobile-nav{ display:none; }
 }
 
 /* ---------- Theme toggle (glass pill) ---------- */
@@ -360,19 +382,17 @@ body:has(.hero-pin) main{ padding-top:0; }
 }
 @media (max-width:700px){
   /* Mobile ditches the pinned scroll-slide effect (it's the fullscreen
-     sticky-stage animation used on desktop) for two plain horizontal cards
-     you swipe between — lighter to run and easier to use with a thumb. */
+     sticky-stage animation used on desktop) for two plain cards stacked
+     vertically — Client Projects on top, Editorial below — scrolled with
+     the rest of the page instead of a pinned/swipe interaction. */
   .hero-pin{ height:auto; }
   .hero-stage{ position:static; height:auto; overflow:visible; background:none; }
   .hero-frame{
     position:static; inset:auto;
-    display:flex; gap:12px;
-    overflow-x:auto; scroll-snap-type:x mandatory;
-    -webkit-overflow-scrolling:touch; scrollbar-width:none;
-    margin:0 -16px; padding:0 16px 4px;
+    display:flex; flex-direction:column; gap:12px;
+    padding:16px;
     border-radius:0;
   }
-  .hero-frame::-webkit-scrollbar{ display:none; }
 }
 .hero-slide{
   position:absolute; top:0; bottom:0;
@@ -383,14 +403,20 @@ body:has(.hero-pin) main{ padding-top:0; }
   will-change:transform;
 }
 @media (max-width:700px){
-  .hero-slide{
+  /* Extra-specific selectors (.hero-frame .hero-slide--x) are needed here,
+     not just .hero-slide — .hero-slide--projects/--photography below set
+     transform/pointer-events unconditionally at the same specificity as a
+     bare ".hero-slide" media-query rule, and being later in the file they'd
+     otherwise win and leave the Editorial card transformed off-screen. */
+  .hero-frame .hero-slide{
     position:relative; top:auto; bottom:auto; left:auto; right:auto;
     border-radius:14px;
-    flex:0 0 82%;
-    height:64vh;
-    scroll-snap-align:center;
-    transform:none;
+    height:56vh;
     z-index:auto;
+  }
+  .hero-frame .hero-slide--projects,
+  .hero-frame .hero-slide--photography{
+    transform:none;
     pointer-events:auto;
   }
 }
@@ -837,6 +863,13 @@ body.modal-locked{
   display:flex; flex-wrap:wrap; gap:var(--sp-4);
   justify-content:center;
 }
+/* Wraps the count badge + the player itself so the badge can sit above the
+   clip instead of overlaid on top of it — video-player keeps its original
+   sizing untouched, video-item just shrink-wraps around it. */
+.video-item{
+  display:flex; flex-direction:column; gap:var(--sp-2);
+  flex:0 0 auto; max-width:100%;
+}
 .video-player{
   position:relative; border-radius:var(--r-md); overflow:hidden;
   background:var(--ink-900);
@@ -878,7 +911,7 @@ body.modal-locked{
   -webkit-overflow-scrolling:touch;
   padding-bottom:var(--sp-2);
 }
-.video-grid.is-carousel .video-player{ scroll-snap-align:center; }
+.video-grid.is-carousel .video-item{ scroll-snap-align:center; }
 
 /* On mobile, multiple videos become a horizontal swipe carousel instead of
    stacking vertically — each slide is sized a little narrower than the
@@ -900,11 +933,13 @@ body.modal-locked{
     justify-content:center;
     overflow-x:visible;
   }
-  .video-grid.is-single .video-player{
+  .video-grid.is-single .video-item{
     scroll-snap-align:none;
   }
-  .video-player{
+  .video-item{
     scroll-snap-align:center;
+  }
+  .video-player{
     height:auto;
     width:85vw;
     max-width:85vw;
@@ -925,15 +960,14 @@ body.modal-locked{
   width:100%; height:100%; border:0; display:block; background:#000;
 }
 /* Position indicator ("2 / 3") shown whenever a tile has more than one
-   video — makes it obvious there's more to see even when only one clip
-   is visible at a time (e.g. the mobile swipe carousel below). */
-.video-player .vp-count{
-  position:absolute; top:var(--sp-3); left:var(--sp-3); z-index:3;
+   video — sits above the clip (not overlaid on it) so it never covers the
+   video itself, but still makes it obvious there's more to see. */
+.vp-count{
+  align-self:flex-start;
   font-family:var(--font-display); font-size:11px; font-weight:600; letter-spacing:0.05em;
-  color:#fff; background:rgba(18,17,16,0.6);
-  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  color:var(--text-2); background:var(--surface-2);
   padding:var(--sp-1) var(--sp-3); border-radius:var(--r-pill);
-  pointer-events:none;
+  border:1px solid var(--edge-a);
 }
 .video-player .vp-center{
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
