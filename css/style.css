@@ -172,17 +172,20 @@ h1,h2,h3,h4{
 .header-actions{ display:flex; align-items:center; gap:var(--sp-4); }
 .nav-toggle{
   display:none;
-  width:40px; height:40px;
+  width:44px; height:44px;
   flex-direction:column;
   align-items:center; justify-content:center;
+  gap:5px;
   border-radius:var(--r-pill);
   border:1px solid var(--edge-b);
   background:rgba(var(--glass-rgb),0.5);
   backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
-  padding:var(--sp-2);
+  padding:0;
   flex-shrink:0;
 }
-.nav-toggle span{ display:block; width:22px; height:2px; background:var(--text-max); margin:5px 0; border-radius:2px; }
+/* Fixed line count via gap (not margins) — margin math against the button's
+   fixed height was overflowing its own box and made the lines invisible. */
+.nav-toggle span{ display:block; width:20px; height:2px; margin:0; background:var(--text-max); border-radius:2px; flex-shrink:0; }
 
 /* Content needs to clear the floating pill since it's out of flow — except
    on the hero page, where the full-bleed stage is meant to run all the
@@ -191,15 +194,17 @@ main{ padding-top:96px; }
 body:has(.hero-pin) main{ padding-top:0; }
 
 @media (max-width:700px){
-  .site-header{ top:12px; width:calc(100% - 24px); }
+  /* Bottom nav bar on mobile — thumb-reach is easier at the bottom of the
+     screen than stretching up to a top corner. */
+  .site-header{ top:auto; bottom:12px; width:calc(100% - 24px); }
   .site-header .wrap{ height:54px; }
-  main{ padding-top:84px; }
+  main{ padding-top:0; padding-bottom:84px; }
 }
 
 @media (max-width:760px){
   .main-nav{
-    position:fixed; inset:78px 0 0 0;
-    background:rgba(var(--glass-rgb),0.14);
+    position:fixed; inset:0 0 78px 0;
+    background:rgba(var(--glass-rgb),0.92);
     backdrop-filter:blur(24px) saturate(180%);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
     flex-direction:column; align-items:flex-start; gap:var(--sp-6);
@@ -357,7 +362,6 @@ body:has(.hero-pin) main{ padding-top:0; }
   /* Mobile ditches the pinned scroll-slide effect (it's the fullscreen
      sticky-stage animation used on desktop) for two plain horizontal cards
      you swipe between — lighter to run and easier to use with a thumb. */
-  body:has(.hero-pin) main{ padding-top:84px; }
   .hero-pin{ height:auto; }
   .hero-stage{ position:static; height:auto; overflow:visible; background:none; }
   .hero-frame{
@@ -713,8 +717,15 @@ body:has(.hero-pin) main{ padding-top:0; }
     height:100vh; height:100dvh; max-height:none;
     border-radius:0; border:none;
   }
-  .modal-header{ padding:var(--sp-5) var(--sp-5) var(--sp-3); }
-  .modal-body{ padding:var(--sp-5); }
+  /* Title + close button move to the bottom of the sheet on mobile — easier
+     to reach with a thumb than a top corner on a full-height popup. */
+  .modal-header{
+    order:2;
+    padding:var(--sp-3) var(--sp-5) var(--sp-5);
+    border-bottom:none;
+    border-top:1px solid var(--edge-a);
+  }
+  .modal-body{ order:1; padding:var(--sp-5); }
 }
 
 /* ---------- Masonry photo wall ---------- */
