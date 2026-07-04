@@ -677,8 +677,13 @@
     const bottom = loader.querySelector(".loader-bottom");
 
     // A run of photography-series photos flash, one after another, in the
-    // single card that sits in the gap between LIAS and OERTIG.
-    const covers = typeof PHOTOGRAPHY !== "undefined" ? PHOTOGRAPHY.slice(0, 10).map((p) => p.cover) : [];
+    // single card that sits in the gap between LIAS and OERTIG. Video-only
+    // entries (music videos etc.) are excluded so newly added videos at the
+    // front of PHOTOGRAPHY don't bump the real portrait shoots out of this
+    // flash — only shoots with an actual photo set qualify.
+    const covers = typeof PHOTOGRAPHY !== "undefined"
+      ? PHOTOGRAPHY.filter((p) => p.images && p.images.length > 0).slice(0, 10).map((p) => p.cover)
+      : [];
     const FLASH_STEP = 130; // ms between each photo cut
 
     const t = (fn, ms) => setTimeout(fn, ms);
