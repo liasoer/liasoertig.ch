@@ -136,20 +136,6 @@ const PROJECTS = [
 /* ---------------------------------------------------------------------- */
 const PHOTOGRAPHY = [
   {
-    slug: "dear-diary",
-    title: "DEAR DIARY",
-    subtitle: "Minyar",
-    category: "Music Video",
-    instagram: null,
-    year: "2026",
-    description: "Music video \"Dear Diary\" — camera and edit.",
-    cover: "https://img.youtube.com/vi/Z_X4uB03cnQ/maxresdefault.jpg",
-    images: [],
-    videos: [
-      { title: "Music Video", youtube: "Z_X4uB03cnQ" }
-    ]
-  },
-  {
     slug: "into-that-goodnight",
     title: "Into That Goodnight",
     subtitle: "Elin",
@@ -265,6 +251,20 @@ const PHOTOGRAPHY = [
       CDN + "ac566752-5edd-4d4a-86a0-0832e6769f00/LO-03600.jpg",
       CDN + "bea96b09-5f3e-4a66-8465-3c7222eec517/LO-03631.jpg",
       CDN + "8b356dcc-3d3c-4c1a-8f45-5e5af7ed53c6/LO-03675.jpg",
+    ]
+  },
+  {
+    slug: "dear-diary",
+    title: "DEAR DIARY",
+    subtitle: "Minyar",
+    category: "Video",
+    instagram: null,
+    year: "2026",
+    description: "Music video \"Dear Diary\" — camera and edit.",
+    cover: "https://img.youtube.com/vi/Z_X4uB03cnQ/maxresdefault.jpg",
+    images: [],
+    videos: [
+      { title: "Music Video", youtube: "Z_X4uB03cnQ" }
     ]
   },
   {
