@@ -392,14 +392,18 @@ body:has(.hero-pin) main{ padding-top:0; }
   /* Mobile ditches the pinned scroll-slide effect (it's the fullscreen
      sticky-stage animation used on desktop) for two plain cards stacked
      vertically — Client Projects on top, Editorial below — scrolled with
-     the rest of the page instead of a pinned/swipe interaction. */
-  .hero-pin{ height:auto; }
-  .hero-stage{ position:static; height:auto; overflow:visible; background:none; }
+     the rest of the page instead of a pinned/swipe interaction. The whole
+     stack is stretched via flex to fill the available screen height (minus
+     the bottom nav-pill clearance main already reserves) so the two cards
+     grow to use the space instead of leaving it empty below them. */
+  .hero-pin{ height:auto; min-height:calc(100svh - 84px); display:flex; }
+  .hero-stage{ position:static; height:auto; overflow:visible; background:none; flex:1; display:flex; }
   .hero-frame{
     position:static; inset:auto;
     display:flex; flex-direction:column; gap:12px;
     padding:16px;
     border-radius:0;
+    flex:1;
   }
 }
 .hero-slide{
@@ -419,11 +423,15 @@ body:has(.hero-pin) main{ padding-top:0; }
   .hero-frame .hero-slide{
     position:relative; top:auto; bottom:auto; left:auto; right:auto;
     border-radius:14px;
-    /* 4:3 (or shorter) instead of a tall 56vh slab — both cards plus the
-       frame's own padding/gap now add up to comfortably under one screen
-       height, so the hero page needs no scrolling to see both on mobile. */
+    /* Each card grows to fill its equal share of whatever height the frame
+       has available (capped at 4:3 so they never get too tall/slab-like)
+       instead of a fixed aspect-ratio — this uses the space the removed
+       credit line freed up instead of leaving it blank. */
+    flex:1 1 0;
+    min-height:0;
+    max-height:75vw;
     height:auto;
-    aspect-ratio:4/3;
+    aspect-ratio:auto;
     z-index:auto;
   }
   .hero-frame .hero-slide--projects,
@@ -476,24 +484,12 @@ body:has(.hero-pin) main{ padding-top:0; }
   color:#fff;
   line-height:0.92; letter-spacing:-0.01em;
 }
-.hero-credit{
-  position:absolute; z-index:4; left:0; right:0; bottom:var(--sp-2);
-  text-align:center;
-  font-family:var(--font-display); font-size:12px; letter-spacing:0.06em;
-  color:rgba(255,255,255,0.5);
-  pointer-events:none;
-}
 @media (max-width:700px){
   .hero-slide-caption{ left:var(--sp-5); bottom:var(--sp-8); }
   .hero-corner--tl, .hero-corner--tr{ top:var(--sp-4); }
   .hero-corner--bl, .hero-corner--br{ bottom:var(--sp-4); }
   .hero-corner--tl, .hero-corner--bl{ left:var(--sp-4); }
   .hero-corner--tr, .hero-corner--br{ right:var(--sp-4); }
-  .hero-credit{
-    position:static;
-    margin-top:var(--sp-4);
-    color:var(--text-2);
-  }
 }
 
 /* ---------- Section ---------- */
@@ -708,14 +704,14 @@ body:has(.hero-pin) main{ padding-top:0; }
   transition:background var(--dur-med) var(--ease-ui), color var(--dur-med) var(--ease-ui);
 }
 .footer-top{
-  /* Nav + contact columns sit side by side, flush to the right, on every
-     screen size — including mobile, so they read as one horizontal row
-     instead of stacking. */
+  /* Nav + contact columns sit side by side on every screen size, spread to
+     the full width so Navigate is flush against the left edge and Get in
+     touch flush against the right — not just grouped together off-center. */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start;
-  justify-content:flex-end; gap:var(--sp-8);
+  justify-content:space-between; gap:var(--sp-8);
 }
 @media (min-width:760px){
-  .footer-top{ justify-content:space-between; gap:var(--sp-16); }
+  .footer-top{ gap:var(--sp-16); }
 }
 .footer-col{ display:flex; flex-direction:column; gap:var(--sp-4); }
 /* Navigate always hugs the left edge of its column, Get in touch always
@@ -736,13 +732,6 @@ body:has(.hero-pin) main{ padding-top:0; }
   transition:color var(--dur-fast) var(--ease-ui);
 }
 .footer-links a:hover, .footer-links a.active{ color:var(--text-1); }
-.footer-bottom{
-  margin-top:var(--sp-16); padding-top:var(--sp-6); border-top:1px solid var(--edge-a);
-  display:flex; flex-wrap:wrap; gap:var(--sp-4); align-items:center; justify-content:space-between;
-  font-size:12px; color:var(--text-2);
-}
-.footer-bottom .brand img{ height:20px; filter:brightness(0); }
-:root[data-theme="dark"] .footer-bottom .brand img{ filter:brightness(0) invert(1); }
 
 /* ---------- Modal / Popup (near-fullpage but still an overlay) ---------- */
 .modal-overlay{
