@@ -11,109 +11,120 @@ const CDN = "https://images.squarespace-cdn.com/content/v1/6294b081d7e567047cfd1
 /* ---------------------------------------------------------------------- */
 const PROJECTS = [
   {
-    slug: "circusknie",
-    title: "Circus Knie",
-    category: "Event",
-    instagram: "circusknie",
-    year: "2025",
-    description: "Backstage and ring-side moments from Switzerland's national circus — light, motion, and the quiet behind the big show.",
-    cover: CDN + "3244e3e1-789c-4d9a-886d-88e41707193e/LO-08873.jpg",
-    images: [
-      CDN + "3244e3e1-789c-4d9a-886d-88e41707193e/LO-08873.jpg",
-      CDN + "523d7ba8-0485-4f26-bd70-b79d10957801/LO-08741.jpg",
-      CDN + "59b60472-a9d2-44a3-9674-1a8b8c0673e0/LO-07396.jpg",
-      CDN + "968cf203-54b8-4135-b516-b43fe47860f1/LO-08933.jpg",
-      CDN + "0cd93540-d913-4f09-8cee-baa74c200400/LO-08625.jpg",
-      CDN + "b2b175f4-0acd-4294-9567-7202f473a23b/LO-07496.jpg",
-      CDN + "8c3df6bf-5c95-4187-927a-f88e487b0fe8/LO-00218.jpg",
-      CDN + "59067a93-6450-4303-9287-caac924a933e/LO-08330.jpg",
-      CDN + "5d0cc8e0-c6df-44ee-a5d0-81252b91e498/LO-07928.jpg",
-      CDN + "b627b8c9-5d75-4476-b43e-afbe41a4ab6e/LO-07902.jpg",
-      CDN + "baf82015-5bb7-4e16-9881-a74aeef8210d/LO-09988.jpg",
-      CDN + "ccf026af-a5bb-4f89-9013-e27cd92507c5/LO-07858.jpg",
-      CDN + "873c1230-4804-4b3c-9985-f1e03f6ab2ab/LO-09078.jpg",
-      CDN + "5d06921b-a8a7-4a9f-bd00-e7de1b9bc88f/LO-08900.jpg",
-      CDN + "cdf7ff75-e25d-4618-b14f-9299d00d7952/LO-09133.jpg",
-      CDN + "01dbb33b-7bf5-406b-b601-b5648c093806/LO-08128.jpg",
-    ]
-  },
-  {
     slug: "kuenstlercantina",
-    title: "Künstlercantina",
-    category: "Event",
+    title: "KUENSTLERCANTINA",
+    subtitle: "NALI",
+    category: "Imagefilm (inkl. Trailer)",
     instagram: "kuenstlercantina",
     year: "2024",
     description: "Concert nights at Künstlercantina — stage light, crowd energy, and the pulse of small venues.",
-    cover: "assets/posters/kuenstlercantina-trailer.jpg",
+    cover: "assets/posters/kuenstlercantina-cover.jpg",
+    accent: ["#5c81df", "#df9f5c", "#df5c9e"],
     videos: [
       {
         title: "Imagefilm",
-        src: "assets/video/kuenstlercantina-imagefilm.mp4",
-        poster: "assets/posters/kuenstlercantina-imagefilm.jpg"
+        youtube: "FuKDkmdblTw"
       },
       {
         title: "Trailer",
-        src: "assets/video/kuenstlercantina-trailer.mp4",
-        poster: "assets/posters/kuenstlercantina-trailer.jpg"
+        youtube: "jFUFUN_sSaA"
       }
     ],
     images: []
   },
   {
-    slug: "nali-bubble-event",
-    title: "NALI — Bubble Event",
-    category: "Event / Brand",
+    slug: "bubble-event",
+    title: "BUBBLE EVENT",
+    subtitle: "NALI",
+    category: "Short Form Video Content",
     instagram: null,
     year: "2025",
     description: "Reels and edits from the NALI Bubble Event — pure motion work, no photo set for this one.",
     cover: "assets/posters/nali.jpg",
+    accent: ["#5c9edf", "#5cdf7d", "#dfb95c"],
     images: [],
     videos: [
-      { title: "Event Edit", src: "assets/video/nali-bubble-event-edit.mp4", poster: "assets/posters/nali-bubble-event-edit.jpg" },
-      { title: "Reel 1", src: "assets/video/nali-bubble-event-reel-1.mp4", poster: "assets/posters/nali-bubble-event-reel-1.jpg" },
-      { title: "Reel 2", src: "assets/video/nali-bubble-event-reel-2.mp4", poster: "assets/posters/nali-bubble-event-reel-2.jpg" },
-      { title: "Final Cut 1", src: "assets/video/nali-final-1.mp4", poster: "assets/posters/nali-final-1.jpg" },
-      { title: "Final Cut 2", src: "assets/video/nali-final-2.mp4", poster: "assets/posters/nali-final-2.jpg" },
-      { title: "Final Cut 3", src: "assets/video/nali-final-3.mp4", poster: "assets/posters/nali-final-3.jpg" }
+      { title: "Event Edit", youtube: "0wNqssDT_o8", portrait: true },
+      { title: "Reel 1", youtube: "Cj76jSYAK3w", portrait: true },
+      { title: "Reel 2", youtube: "n2IM4hdluWk", portrait: true },
+      { title: "Final Cut 1", youtube: "PiLUYnT9ymM", portrait: true },
+      { title: "Final Cut 2", youtube: "f9QHsYk7BBA", portrait: true },
+      { title: "Final Cut 3", youtube: "LS-gw1JQzHU", portrait: true }
     ]
   },
   {
-    slug: "doppelstrich-ausstellung",
-    title: "Doppelstrich — Exhibition",
-    category: "Exhibition / Brand",
+    slug: "camille-showreel",
+    title: "SHOWREEL",
+    subtitle: "Camille",
+    category: "Showreel",
+    instagram: null,
+    year: null,
+    description: "Showreel for Camille — a compilation of motion work.",
+    cover: "https://img.youtube.com/vi/DgJ82qPwqUA/hqdefault.jpg",
+    images: [],
+    videos: [
+      { title: "Showreel", youtube: "DgJ82qPwqUA" }
+    ]
+  },
+  {
+    slug: "lothar-moebel",
+    title: "LOTHAR MÖBEL",
+    subtitle: "Doppelstrich",
+    category: "Short Form Video Content",
     instagram: null,
     year: "2025",
     description: "A look inside the Doppelstrich exhibition — craft, wood and process, captured in motion.",
     cover: "assets/posters/doppelstrich-ausstellung.jpg",
+    accent: ["#df765c", "#dfa15c", "#df5c9e"],
     images: [],
     videos: [
       { title: "Video", src: "assets/video/doppelstrich-ausstellung.mp4", poster: "assets/posters/doppelstrich-ausstellung.jpg" }
     ]
   },
   {
-    slug: "enni-musicvideo",
-    title: "Enni — Music Video",
+    slug: "to",
+    title: "TO",
+    subtitle: "Enni",
     category: "Music Video",
     instagram: null,
     year: "2025",
     description: "Music video production for Enni — camera and edit.",
     cover: "assets/posters/enni-musicvideo.jpg",
+    accent: ["#dadf5c", "#a3df5c", "#dfb05c"],
     images: [],
     videos: [
-      { title: "Music Video", src: "assets/video/enni-musicvideo.mp4", poster: "assets/posters/enni-musicvideo.jpg" }
+      { title: "Music Video", youtube: "VUdOYr9K__k" }
     ]
   },
   {
     slug: "look-in-the-mirror",
-    title: "Look in the Mirror",
+    title: "LOOK IN THE MIRROR",
+    subtitle: "Minyar",
     category: "Music Video",
     instagram: null,
     year: "2025",
     description: "Music video \"Look in the Mirror\" — staged visual language, camera and edit.",
     cover: "assets/posters/look-in-the-mirror.jpg",
+    accent: ["#dfbf5c", "#df925c", "#5cdf5c"],
     images: [],
     videos: [
-      { title: "Music Video", src: "assets/video/look-in-the-mirror.mp4", poster: "assets/posters/look-in-the-mirror.jpg" }
+      { title: "Music Video", youtube: "uWKFiTOV2_w" }
+    ]
+  },
+  {
+    slug: "dancing",
+    title: "DANCING",
+    subtitle: "Camille & Sophie",
+    category: "Short Form Video Content",
+    instagram: "camillesjournal",
+    year: "2024",
+    description: "Double portrait with Camille and Sophie, in motion — the video reels from the same session.",
+    cover: "assets/posters/camillesophie-videos-cover.jpg",
+    accent: ["#df7d5c", "#dfba5c", "#5c88df"],
+    images: [],
+    videos: [
+      { title: "Reel 1", src: "assets/video/camillesophie-reel1.mp4", poster: "assets/posters/camillesophie-reel1-poster.jpg" },
+      { title: "Reel 3", src: "assets/video/camillesophie-reel3.mp4", poster: "assets/posters/camillesophie-reel3-poster.jpg" }
     ]
   },
 ];
@@ -124,7 +135,7 @@ const PROJECTS = [
 const PHOTOGRAPHY = [
   {
     slug: "camille-golf",
-    title: "Camille — Golf",
+    title: "Camille",
     instagram: "camillesjournal",
     year: "2025",
     description: "Camille on the golf course — quiet lines, warm light, an afternoon between fairways.",
@@ -146,7 +157,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "emma-iii",
-    title: "Emma III",
+    title: "Emma",
     instagram: "emma_climent",
     year: "2024",
     description: "Third session with Emma — studio light and still poses, reduced to expression and texture.",
@@ -168,7 +179,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "sophie-i",
-    title: "Sophie I",
+    title: "Sophie",
     instagram: "sophie.loreti",
     year: "2025",
     description: "First collaboration with Sophie — natural light, warm tones, relaxed eye contact.",
@@ -190,7 +201,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "minyar-iii",
-    title: "Minyar III",
+    title: "Minyar",
     instagram: "minyar_01",
     year: "2025",
     description: "Third session with Minyar — quiet portraits focused on light and silhouette.",
@@ -210,7 +221,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "lara-ii",
-    title: "Lara II",
+    title: "Lara",
     instagram: "_.larush._",
     year: "2025",
     description: "Second session with Lara — minimal, calm, plenty of room to breathe in the frame.",
@@ -246,7 +257,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "lara-i",
-    title: "Lara I",
+    title: "Lara",
     instagram: "_.larush._",
     year: "2024",
     description: "First session with Lara — natural light, open gazes, unfussy images.",
@@ -266,7 +277,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "emma-ii",
-    title: "Emma II",
+    title: "Emma",
     instagram: "emma_climent",
     year: "2024",
     description: "Second session with Emma — movement and close-ups in soft window light.",
@@ -286,7 +297,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "minyar-ii",
-    title: "Minyar II",
+    title: "Minyar",
     instagram: "minyar_01",
     year: "2024",
     description: "Second session with Minyar — reduced palette, clear compositions.",
@@ -305,7 +316,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "fabienne-i",
-    title: "Fabienne I",
+    title: "Fabienne",
     instagram: "fabienne0805",
     year: "2024",
     description: "First session with Fabienne — soft light, many expressions, honest images.",
@@ -325,7 +336,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "emma-i",
-    title: "Emma I",
+    title: "Emma",
     instagram: "emma_climent",
     year: "2024",
     description: "First collaboration with Emma — classic studio portraits, clean and reduced.",
@@ -343,7 +354,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "louisa-iii",
-    title: "Louisa III",
+    title: "Louisa",
     instagram: "louisaeleonoraa",
     year: "2024",
     description: "Third session with Louisa — documentary, unstaged, full of movement.",
@@ -361,7 +372,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "minyar-i",
-    title: "Minyar I",
+    title: "Minyar",
     instagram: "minyar_01",
     year: "2024",
     description: "First session with Minyar — the start of a longer collaboration, quiet tonality.",
@@ -379,7 +390,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "louisa-ii",
-    title: "Louisa II",
+    title: "Louisa",
     instagram: "louisaeleonoraa",
     year: "2024",
     description: "Second session with Louisa — street-style portraits with a quiet eye for detail.",
@@ -397,7 +408,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "lina-ii",
-    title: "Lina II",
+    title: "Lina",
     instagram: "linabarmettler",
     year: "2024",
     description: "Second session with Lina — portraits in golden-hour light, relaxed and warm.",
@@ -457,7 +468,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "louisa-i",
-    title: "Louisa I",
+    title: "Louisa",
     instagram: "louisaeleonoraa",
     year: "2024",
     description: "First session with Louisa — the start of a series, documentary and unhurried.",
@@ -475,7 +486,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "lina-i",
-    title: "Lina I",
+    title: "Lina",
     instagram: "linabarmettler",
     year: "2024",
     description: "First session with Lina — classic portraits, calmly composed.",

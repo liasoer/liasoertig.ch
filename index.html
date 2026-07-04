@@ -5,7 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lias Oertig — Photography &amp; Videography</title>
 <meta name="description" content="Lias Oertig — photographer and videographer based in Zürich. Client projects and personal, editorial photography.">
-<link rel="stylesheet" href="css/style.css?v=69">
+<script>
+  // Set the theme before first paint so page navigation never flashes the
+  // light-theme background for a frame — the same logic main.js uses.
+  (function(){
+    try {
+      var t = localStorage.getItem("lo-theme") || "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    } catch(e){
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<style>
+  /* Matches body{background} in style.css — inlined so the very first
+     paint (before the external stylesheet loads) is already correct,
+     instead of the browser's default white canvas. */
+  html{ background:#121110; }
+  html[data-theme="light"]{ background:#faf9f6; }
+</style>
+<link rel="stylesheet" href="css/style.css?v=135">
 </head>
 <body>
 
@@ -17,9 +36,9 @@
     <span class="lw-half lw-right">OERTIG</span>
   </div>
   <div class="loader-bottom">
-    <span>Film by film</span>
-    <span>Moment by moment</span>
-    <span>Made in Zürich ♥</span>
+    <span>Photographer</span>
+    <span>Videographer</span>
+    <span>Established in 2021</span>
   </div>
 </div>
 
@@ -30,10 +49,9 @@
       <span class="brand-name">Lias Oertig</span>
     </a>
     <nav class="main-nav">
-      <a href="index.html" class="active">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="photography.html">Photography</a>
-      <a href="mailto:info@liasoertig.ch">Contact</a>
+      <a href="projects.html">Client Projects</a>
+      <a href="photography.html">Editorial</a>
+      <a href="contact.html">Contact</a>
     </nav>
     <div class="header-actions">
       <button class="theme-toggle" aria-label="Toggle dark mode">
@@ -65,8 +83,8 @@
         <span class="hero-corner hero-corner--bl">+</span>
         <span class="hero-corner hero-corner--br">+</span>
         <div class="hero-slide-caption">
-          <p class="eyebrow hero-slide-eyebrow">Selected work</p>
-          <h2 class="hero-slide-title">PROJECTS</h2>
+          <p class="eyebrow hero-slide-eyebrow">Videography</p>
+          <h2 class="hero-slide-title">CLIENT PROJECTS</h2>
         </div>
       </a>
 
@@ -80,8 +98,8 @@
         <span class="hero-corner hero-corner--bl">+</span>
         <span class="hero-corner hero-corner--br">+</span>
         <div class="hero-slide-caption">
-          <p class="eyebrow hero-slide-eyebrow">Personal work</p>
-          <h2 class="hero-slide-title">PHOTOGRAPHY</h2>
+          <p class="eyebrow hero-slide-eyebrow">Photography</p>
+          <h2 class="hero-slide-title">EDITORIAL</h2>
         </div>
       </a>
 
@@ -91,7 +109,7 @@
   </section>
 </main>
 
-<script src="js/data.js?v=69"></script>
-<script src="js/main.js?v=69"></script>
+<script src="js/data.js?v=135"></script>
+<script src="js/main.js?v=135"></script>
 </body>
 </html>

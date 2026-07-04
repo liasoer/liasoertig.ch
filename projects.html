@@ -3,9 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Projects — Lias Oertig</title>
+<title>Client Projects — Lias Oertig</title>
 <meta name="description" content="Client work by Lias Oertig: events, weddings and brand projects.">
-<link rel="stylesheet" href="css/style.css?v=69">
+<script>
+  // Set the theme before first paint so page navigation never flashes the
+  // light-theme background for a frame — the same logic main.js uses.
+  (function(){
+    try {
+      var t = localStorage.getItem("lo-theme") || "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    } catch(e){
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<style>
+  /* Matches body{background} in style.css — inlined so the very first
+     paint (before the external stylesheet loads) is already correct,
+     instead of the browser's default white canvas. */
+  html{ background:#121110; }
+  html[data-theme="light"]{ background:#faf9f6; }
+</style>
+<link rel="stylesheet" href="css/style.css?v=135">
 </head>
 <body>
 
@@ -16,10 +35,9 @@
       <span class="brand-name">Lias Oertig</span>
     </a>
     <nav class="main-nav">
-      <a href="index.html">Home</a>
-      <a href="projects.html" class="active">Projects</a>
-      <a href="photography.html">Photography</a>
-      <a href="mailto:info@liasoertig.ch">Contact</a>
+      <a href="projects.html" class="active">Client Projects</a>
+      <a href="photography.html">Editorial</a>
+      <a href="contact.html">Contact</a>
     </nav>
     <div class="header-actions">
       <button class="theme-toggle" aria-label="Toggle dark mode">
@@ -36,20 +54,13 @@
 </header>
 
 <main>
-  <section class="section stack-intro">
+  <section class="section">
     <div class="wrap">
       <div class="section-head">
-        <p class="eyebrow">Client work</p>
-        <h1>Projects</h1>
+        <p class="eyebrow">Videography</p>
+        <h1>Client Projects</h1>
       </div>
-    </div>
-  </section>
-
-  <section class="project-stack-pin" id="project-stack-pin">
-    <div class="project-stack-stage">
-      <div class="wrap">
-        <div class="project-stack" id="project-stack"></div>
-      </div>
+      <div class="grid" id="projects-grid"></div>
     </div>
   </section>
 </main>
@@ -70,10 +81,10 @@
   </div>
 </footer>
 
-<script src="js/data.js?v=69"></script>
-<script src="js/main.js?v=69"></script>
+<script src="js/data.js?v=135"></script>
+<script src="js/main.js?v=135"></script>
 <script>
-  PortfolioSite.renderProjectStack(document.getElementById("project-stack"), [...PROJECTS].reverse());
+  PortfolioSite.renderGrid(document.getElementById("projects-grid"), [...PROJECTS].reverse(), { showCategory: true });
 </script>
 </body>
 </html>

@@ -44,12 +44,94 @@
     );
   }
 
+  /* ---------- Scroll lock (used while a modal/loader is open) ---------- */
+  // Plain `overflow:hidden` doesn't reliably preserve the page's scroll
+  // position once it's re-enabled — the page can jump back to the top.
+  // Pinning the body with `position:fixed` and a negative `top` equal to the
+  // scroll offset, then restoring `window.scrollTo` on unlock, keeps the
+  // visitor exactly where they were.
+  let savedScrollY = 0;
+  function lockScroll() {
+    savedScrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.style.top = `-${savedScrollY}px`;
+    document.documentElement.classList.add("modal-locked");
+    document.body.classList.add("modal-locked");
+  }
+  // Belt-and-suspenders: the fixed-body trick above stops the page's own
+  // scroll, but wheel/touch input can still bubble through and nudge the
+  // browser (especially touch rubber-banding). Swallow that input outright
+  // whenever locked, except inside the modal's own body, which still needs
+  // to scroll its photo/video content.
+  document.addEventListener("wheel", (e) => {
+    if (!document.documentElement.classList.contains("modal-locked")) return;
+    const modalEl = overlayEl && overlayEl.querySelector(".modal");
+    if (modalEl && modalEl.contains(e.target)) return;
+    e.preventDefault();
+  }, { passive: false });
+  document.addEventListener("touchmove", (e) => {
+    if (!document.documentElement.classList.contains("modal-locked")) return;
+    const modalEl = overlayEl && overlayEl.querySelector(".modal");
+    if (modalEl && modalEl.contains(e.target)) return;
+    e.preventDefault();
+  }, { passive: false });
+
+  function unlockScroll() {
+    document.documentElement.classList.remove("modal-locked");
+    document.body.classList.remove("modal-locked");
+    document.body.style.top = "";
+    // html has scroll-behavior:smooth globally, which would otherwise animate
+    // this jump — visibly scrolling the page from the top back down to where
+    // it was. Switch to an instant jump just for this restore.
+    const prevBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, savedScrollY);
+    document.documentElement.style.scrollBehavior = prevBehavior;
+  }
+
   /* ---------- Edge glass (frosted vignette while scrolling) ---------- */
   if (!document.querySelector(".edge-glass-bottom")) {
     const bottom = document.createElement("div");
     bottom.className = "edge-glass edge-glass-bottom";
     document.body.appendChild(bottom);
   }
+
+  /* ---------- Contact page: mouse-follow highlight + copy-to-clipboard ---------- */
+  (function initContactPage() {
+    const section = document.querySelector(".contact-section");
+    if (!section) return;
+    section.addEventListener("mousemove", (e) => {
+      const rect = section.getBoundingClientRect();
+      section.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+      section.style.setProperty("--my", `${e.clientY - rect.top}px`);
+    });
+
+    section.querySelectorAll(".copy-btn").forEach((btn) => {
+      let resetTimer;
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const text = btn.dataset.copy || "";
+        const markCopied = () => {
+          btn.classList.add("is-copied");
+          clearTimeout(resetTimer);
+          resetTimer = setTimeout(() => btn.classList.remove("is-copied"), 1800);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(markCopied).catch(() => {});
+        } else {
+          // Fallback for browsers without the async Clipboard API.
+          const tmp = document.createElement("textarea");
+          tmp.value = text;
+          tmp.style.position = "fixed";
+          tmp.style.opacity = "0";
+          document.body.appendChild(tmp);
+          tmp.select();
+          try { document.execCommand("copy"); markCopied(); } catch (err) {}
+          tmp.remove();
+        }
+      });
+    });
+  })();
 
   const ICON_CLOSE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>`;
   const ICON_PREV = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
@@ -61,6 +143,7 @@
   const ICON_MUTE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4 9 9 9 13 5 13 19 9 15 4 15" fill="currentColor" stroke="none"/><line x1="17" y1="9" x2="22" y2="14"/><line x1="22" y1="9" x2="17" y2="14"/></svg>`;
   const ICON_SOUND = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4 9 9 9 13 5 13 19 9 15 4 15" fill="currentColor" stroke="none"/><path d="M17 8a5 5 0 0 1 0 8"/><path d="M19.5 5.5a9 9 0 0 1 0 13"/></svg>`;
   const ICON_EXPAND = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+  const ICON_COLLAPSE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 3 9 9 3 9"/><polyline points="15 21 15 15 21 15"/><line x1="3" y1="21" x2="9" y2="15"/><line x1="21" y1="3" x2="15" y2="9"/></svg>`;
 
   /**
    * Renders a minimal card grid (cover + tiny category tag + title only)
@@ -71,19 +154,16 @@
     container.innerHTML = items
       .map((item, i) => {
         const tag = opts.showCategory && item.category ? item.category : (opts.tagLabel || "Portrait");
-        const hasVideo = item.videos && item.videos.length > 0;
-        const sub = [tag, item.year].filter(Boolean).join(" · ");
+        const heading = [item.title, item.subtitle].filter(Boolean).join(" - ");
         return `
         <article class="card" data-index="${i}" tabindex="0" role="button" aria-label="View ${item.title}">
           <div class="card-media">
             <span class="tag">${tag}</span>
-            ${hasVideo ? `<span class="play-badge">${ICON_PLAY_SOLID}</span>` : ""}
             <img src="${item.cover}" alt="${item.title}" loading="lazy">
           </div>
           <div class="card-body">
             <div class="card-heading">
-              <h3>${item.title}</h3>
-              <p class="card-sub">${sub}</p>
+              <h3>${heading}</h3>
             </div>
             <span class="arrow">${ICON_ARROW}</span>
           </div>
@@ -153,7 +233,7 @@
 
   /* ---------- Modal / popup gallery ---------- */
   let overlayEl, currentItem;
-  let activePlayer = null; // custom video player controller for the open modal
+  let activePlayers = []; // one controller per video cell in the currently open modal
 
   function ensureOverlay() {
     if (overlayEl) return overlayEl;
@@ -179,20 +259,7 @@
           </div>
 
           <div class="modal-pane" data-pane="videos">
-            <div class="video-list m-video-list"></div>
-            <div class="video-player m-video-player">
-              <video playsinline></video>
-              <div class="vp-center">
-                <button class="vp-play-big" aria-label="Play">${ICON_PLAY}</button>
-              </div>
-              <div class="vp-controls">
-                <button class="vp-btn vp-play" aria-label="Play/Pause">${ICON_PLAY}</button>
-                <span class="vp-time"><span class="vp-current">0:00</span> / <span class="vp-duration">0:00</span></span>
-                <input class="vp-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
-                <button class="vp-btn vp-mute" aria-label="Mute">${ICON_SOUND}</button>
-                <button class="vp-btn vp-fullscreen" aria-label="Fullscreen">${ICON_EXPAND}</button>
-              </div>
-            </div>
+            <div class="video-grid m-video-grid"></div>
           </div>
         </div>
       </div>`;
@@ -211,7 +278,7 @@
         overlayEl.querySelectorAll(".modal-pane").forEach((p) =>
           p.classList.toggle("is-active", p.dataset.pane === pane)
         );
-        if (pane === "photos" && activePlayer) activePlayer.pause();
+        if (pane === "photos") activePlayers.forEach((ctrl) => ctrl.pause());
       });
     });
 
@@ -250,6 +317,10 @@
     return `${m}:${s}`;
   }
 
+  // Wires up one video-player cell (its own <video> + controls). Multiple
+  // videos each get their own independent instance now — no shared player,
+  // no thumbnail strip — so they can sit side by side like the photo wall
+  // and each keep its own play state, progress and orientation.
   function createVideoPlayerController(playerEl) {
     const video = playerEl.querySelector("video");
     const playBig = playerEl.querySelector(".vp-play-big");
@@ -268,17 +339,6 @@
       playerEl.classList.toggle("is-paused", !isPlaying);
     }
 
-    function load(src, poster) {
-      video.pause();
-      video.src = src;
-      if (poster) video.poster = poster;
-      video.load();
-      seek.value = 0;
-      curEl.textContent = "0:00";
-      durEl.textContent = "0:00";
-      setPlayIcon(false);
-    }
-
     function togglePlay() {
       if (video.paused) video.play();
       else video.pause();
@@ -291,8 +351,15 @@
     video.addEventListener("pause", () => setPlayIcon(false));
     video.addEventListener("ended", () => setPlayIcon(false));
 
+    // Match the box to the video's real proportions the moment we know
+    // them — vertical/phone-shot clips get a tall, portrait box instead of
+    // being forced into a 16:9 letterboxed frame.
     video.addEventListener("loadedmetadata", () => {
       durEl.textContent = fmtTime(video.duration);
+      if (video.videoWidth && video.videoHeight) {
+        playerEl.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+        playerEl.classList.toggle("is-portrait", video.videoHeight > video.videoWidth);
+      }
     });
     video.addEventListener("timeupdate", () => {
       if (seeking) return;
@@ -315,51 +382,89 @@
       muteBtn.innerHTML = muted ? ICON_MUTE : ICON_SOUND;
     });
 
+    function isFullscreen() {
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+      return fsEl === playerEl || fsEl === video;
+    }
+
+    function updateFsIcon() {
+      fsBtn.innerHTML = isFullscreen() ? ICON_COLLAPSE : ICON_EXPAND;
+      fsBtn.setAttribute("aria-label", isFullscreen() ? "Exit fullscreen" : "Fullscreen");
+    }
+
     fsBtn.addEventListener("click", () => {
-      if (playerEl.requestFullscreen) playerEl.requestFullscreen();
-      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+      if (isFullscreen()) {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (video.webkitExitFullscreen) video.webkitExitFullscreen();
+      } else if (playerEl.requestFullscreen) {
+        playerEl.requestFullscreen();
+      } else if (video.webkitEnterFullscreen) {
+        video.webkitEnterFullscreen();
+      }
     });
 
+    document.addEventListener("fullscreenchange", updateFsIcon);
+    document.addEventListener("webkitfullscreenchange", updateFsIcon);
+
     return {
-      load,
+      video,
       pause() { video.pause(); },
     };
   }
 
-  function renderVideoTabs(item) {
+  function renderVideoGrid(item) {
     const el = overlayEl;
-    const listEl = el.querySelector(".m-video-list");
+    const gridEl = el.querySelector(".m-video-grid");
     const videos = item.videos || [];
-    if (videos.length <= 1) {
-      listEl.innerHTML = "";
-      listEl.hidden = true;
-    } else {
-      listEl.hidden = false;
-      // A horizontal strip of poster thumbnails sitting next to each
-      // other — only the friendly title is ever shown, never the file path.
-      listEl.innerHTML = videos
-        .map(
-          (v, i) => `
-        <button data-i="${i}" class="vlist-item ${i === 0 ? "is-active" : ""}" aria-label="Play ${v.title}">
-          <span class="vlist-thumb">
-            <img src="${v.poster || item.cover}" alt="" loading="lazy">
-            <span class="vlist-play">${ICON_PLAY_SOLID}</span>
-          </span>
-          <span class="vlist-label">${v.title}</span>
-        </button>`
-        )
-        .join("");
-      listEl.querySelectorAll("button").forEach((b) =>
-        b.addEventListener("click", () => {
-          listEl.querySelectorAll("button").forEach((x) => x.classList.remove("is-active"));
-          b.classList.add("is-active");
-          const v = videos[Number(b.dataset.i)];
-          activePlayer.load(v.src, v.poster);
-        })
-      );
-    }
-    if (!activePlayer) activePlayer = createVideoPlayerController(el.querySelector(".m-video-player"));
-    if (videos.length) activePlayer.load(videos[0].src, videos[0].poster || item.cover);
+
+    gridEl.innerHTML = videos
+      .map((v) => {
+        // YouTube-hosted clips just embed the standard player — no custom
+        // controls to wire up, since YouTube brings its own.
+        if (v.youtube) {
+          return `
+      <div class="video-player is-embed${v.portrait ? " is-portrait" : ""}">
+        <iframe
+          src="https://www.youtube.com/embed/${v.youtube}?modestbranding=1&rel=0&iv_load_policy=3"
+          title="${v.title}"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>`;
+        }
+        return `
+      <div class="video-player">
+        <video playsinline poster="${v.poster || item.cover}" preload="metadata">
+          <source src="${v.src}" type="video/mp4">
+        </video>
+        <div class="vp-center">
+          <button class="vp-play-big" aria-label="Play ${v.title}">${ICON_PLAY}</button>
+        </div>
+        <div class="vp-controls">
+          <button class="vp-btn vp-play" aria-label="Play/Pause">${ICON_PLAY}</button>
+          <span class="vp-time"><span class="vp-current">0:00</span> / <span class="vp-duration">0:00</span></span>
+          <input class="vp-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
+          <button class="vp-btn vp-mute" aria-label="Mute">${ICON_SOUND}</button>
+          <button class="vp-btn vp-fullscreen" aria-label="Fullscreen">${ICON_EXPAND}</button>
+        </div>
+      </div>`;
+      })
+      .join("");
+
+    activePlayers = Array.from(gridEl.querySelectorAll(".video-player:not(.is-embed)")).map((cellEl) =>
+      createVideoPlayerController(cellEl)
+    );
+
+    // Only one clip should ever be making noise at a time — starting one
+    // pauses the rest.
+    activePlayers.forEach((ctrl) => {
+      ctrl.video.addEventListener("play", () => {
+        activePlayers.forEach((other) => {
+          if (other !== ctrl) other.pause();
+        });
+      });
+    });
   }
 
   function openGallery(item) {
@@ -371,7 +476,7 @@
     const tag = item.category || "Portrait";
 
     el.querySelector(".m-title").textContent = item.title;
-    const subParts = [tag, item.year, item.instagram ? "@" + item.instagram : null].filter(Boolean);
+    const subParts = [item.subtitle, tag].filter(Boolean);
     el.querySelector(".m-sub").textContent = subParts.join(" · ");
 
     if (hasPhotos) renderMasonry(item);
@@ -386,145 +491,26 @@
     tabsEl.querySelectorAll("button").forEach((b) => b.classList.toggle("is-active", b.dataset.pane === defaultPane));
     el.querySelectorAll(".modal-pane").forEach((p) => p.classList.toggle("is-active", p.dataset.pane === defaultPane));
 
-    if (hasVideo) renderVideoTabs(item);
-    else if (activePlayer) activePlayer.pause();
+    if (hasVideo) renderVideoGrid(item);
+    else {
+      activePlayers.forEach((ctrl) => ctrl.pause());
+      el.querySelector(".m-video-grid").innerHTML = "";
+      activePlayers = [];
+    }
 
     el.classList.add("is-open");
-    document.body.classList.add("modal-locked");
+    lockScroll();
   }
 
   function closeGallery() {
     if (!overlayEl) return;
     overlayEl.classList.remove("is-open");
-    document.body.classList.remove("modal-locked");
-    if (activePlayer) activePlayer.pause();
+    unlockScroll();
+    activePlayers.forEach((ctrl) => ctrl.pause());
     closeLightbox();
   }
 
-  /* ---------------------------------------------------------------------- */
-  /* Cascading project stack — cards sit centered on top of each other;      */
-  /* scrolling sweeps a continuous "active index" through them, so the       */
-  /* focused card is large/sharp up front while the next few sit smaller     */
-  /* and stacked behind, and the one just passed slides down and fades.      */
-  /* Renders as a plain vertical list by default; only switches into the     */
-  /* absolute-positioned stacked layout once the scroll math is wired up,    */
-  /* so a slow/blocked script just leaves a normal, fully usable list.       */
-  /* ---------------------------------------------------------------------- */
-  function renderProjectStack(container, items) {
-    container.innerHTML = items
-      .map((item, i) => {
-        const hasVideo = item.videos && item.videos.length > 0;
-        return `
-        <article class="stack-card" data-index="${i}" tabindex="0" role="button" aria-label="View ${item.title}">
-          <div class="stack-card-head">
-            <span class="stack-card-date">${item.year || ""}</span>
-            <span class="stack-card-title">${item.title}</span>
-            <span class="stack-card-tag">${item.category || ""}</span>
-          </div>
-          <div class="stack-card-media">
-            ${hasVideo ? `<span class="play-badge">${ICON_PLAY_SOLID}</span>` : ""}
-            <img src="${item.cover}" alt="${item.title}" loading="lazy">
-          </div>
-        </article>`;
-      })
-      .join("");
-
-    const cards = Array.from(container.querySelectorAll(".stack-card"));
-    const open = (card) => {
-      if (container.classList.contains("js-active") && !card.classList.contains("is-active")) return;
-      openGallery(items[Number(card.dataset.index)]);
-    };
-    cards.forEach((card) => {
-      card.addEventListener("click", () => open(card));
-      card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          open(card);
-        }
-      });
-    });
-
-    const pin = document.getElementById("project-stack-pin");
-    const stage = pin ? pin.querySelector(".project-stack-stage") : null;
-    if (!pin || !stage || !cards.length) return;
-
-    container.classList.add("js-active");
-
-    const STEP_VH = 90; // scroll distance dedicated to each card, in vh
-    function layoutHeight() {
-      pin.style.height = (items.length * STEP_VH) + "vh";
-    }
-    layoutHeight();
-
-    let ticking = false;
-    let snapTimer = null;
-
-    // Once scrolling settles, snap to whichever card is closest to focused —
-    // you can never rest half-stacked between two cards.
-    function scheduleSnap() {
-      if (snapTimer) clearTimeout(snapTimer);
-      snapTimer = setTimeout(() => {
-        const stepPx = window.innerHeight * (STEP_VH / 100);
-        if (stepPx <= 0) return;
-        const scrolled = -pin.getBoundingClientRect().top;
-        const active = Math.min(Math.max(scrolled / stepPx, 0), items.length - 1);
-        const target = Math.min(Math.max(Math.round(active), 0), items.length - 1);
-        if (Math.abs(active - target) > 0.02) {
-          window.scrollTo({ top: window.scrollY + (target - active) * stepPx, behavior: "smooth" });
-        }
-      }, 140);
-    }
-
-    function update() {
-      const stepPx = window.innerHeight * (STEP_VH / 100);
-      const scrolled = -pin.getBoundingClientRect().top;
-      const active = stepPx > 0
-        ? Math.min(Math.max(scrolled / stepPx, 0), items.length - 1)
-        : 0;
-
-      let frontIdx = 0, frontDist = Infinity;
-      cards.forEach((card, i) => {
-        const d = i - active;
-        let ty, scale, op, z;
-        if (d < 0) {
-          const p = Math.min(-d, 1);
-          ty = p * 160;
-          scale = 1 + p * 0.04;
-          op = 1 - p;
-          z = 200;
-        } else {
-          ty = -d * 50;
-          scale = Math.max(0.72, 1 - d * 0.055);
-          op = Math.max(0, 1 - d * 0.19);
-          z = Math.round(100 - d);
-        }
-        card.style.transform = `translate(-50%, calc(-50% + ${ty}px)) scale(${scale})`;
-        card.style.opacity = String(op);
-        card.style.zIndex = String(z);
-        card.style.pointerEvents = "none";
-        card.classList.remove("is-active");
-
-        const dist = Math.abs(d);
-        if (dist < frontDist) { frontDist = dist; frontIdx = i; }
-      });
-      cards[frontIdx].style.pointerEvents = "auto";
-      cards[frontIdx].classList.add("is-active");
-
-      ticking = false;
-    }
-
-    window.addEventListener("scroll", () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
-      scheduleSnap();
-    }, { passive: true });
-    window.addEventListener("resize", () => { layoutHeight(); update(); });
-    update();
-  }
-
-  window.PortfolioSite = { renderGrid, renderProjectStack, openGallery };
+  window.PortfolioSite = { renderGrid, openGallery };
 
   /* ---------------------------------------------------------------------- */
   /* Intro loader — plays once per browser session on the homepage         */
@@ -543,7 +529,7 @@
       return;
     }
 
-    document.body.classList.add("modal-locked");
+    lockScroll();
 
     const eyebrow = loader.querySelector(".loader-eyebrow");
     const lwLeft = loader.querySelector(".lw-left");
@@ -579,11 +565,11 @@
     // Clean crossfade from the loader's wordmark to the fixed, unfilled one.
     t(() => {
       loader.classList.add("is-hiding");
-      document.body.classList.remove("modal-locked");
+      unlockScroll();
       try { sessionStorage.setItem(LOADER_KEY, "1"); } catch (e) {}
       document.dispatchEvent(new Event("lo:intro-done"));
       t(() => loader.remove(), 750);
-    }, flashEnd + 1150);
+    }, flashEnd + 2150);
   })();
 
   /* ---------------------------------------------------------------------- */

@@ -21,6 +21,7 @@
   --surface-2:#f2f0ea;   /* subtle alt background (image placeholders, pills) */
   --text-1:#161513;      /* primary text */
   --text-2:#3a3733;      /* secondary / muted text */
+  --text-max:#000000;    /* pure black/white, used where max contrast matters (e.g. floating nav) */
   --edge-a: rgba(22,21,19,0.08);
   --edge-b: rgba(22,21,19,0.14);
   --glass-rgb: 250,249,246;
@@ -55,6 +56,7 @@
   --surface-2:#28251f;
   --text-1:#f5f3ee;
   --text-2:#b7b1a7;
+  --text-max:#ffffff;
   --edge-a: rgba(255,255,255,0.08);
   --edge-b: rgba(255,255,255,0.16);
   --glass-rgb: 18,17,16;
@@ -135,7 +137,7 @@ h1,h2,h3,h4{
   width:calc(100% - 40px); max-width:1200px;
   border-radius:999px;
   border:1px solid var(--edge-b);
-  background:rgba(var(--glass-rgb),0.55);
+  background:rgba(var(--glass-rgb),0.14);
   backdrop-filter:blur(24px) saturate(180%);
   -webkit-backdrop-filter:blur(24px) saturate(180%);
   box-shadow:
@@ -152,7 +154,7 @@ h1,h2,h3,h4{
 .brand{ display:flex; align-items:center; gap:var(--sp-2); }
 .brand img{ height:28px; width:auto; }
 :root[data-theme="dark"] .brand img{ filter:invert(1) brightness(1.6); }
-.brand-name{ font-family:var(--font-display); font-weight:700; letter-spacing:0.02em; text-transform:uppercase; font-size:15px; color:var(--text-1); }
+.brand-name{ font-family:var(--font-display); font-weight:700; letter-spacing:0.02em; text-transform:uppercase; font-size:15px; color:var(--text-max); }
 
 .main-nav{ display:flex; align-items:center; gap:var(--sp-8); }
 .main-nav a{
@@ -160,10 +162,10 @@ h1,h2,h3,h4{
   font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em;
   padding:var(--sp-2) 0;
   position:relative;
-  color:var(--text-2);
-  transition:color var(--dur-fast) var(--ease-ui);
+  color:var(--text-max); opacity:0.62;
+  transition:opacity var(--dur-fast) var(--ease-ui);
 }
-.main-nav a:hover, .main-nav a.active{ color:var(--text-1); }
+.main-nav a:hover, .main-nav a.active{ opacity:1; }
 .main-nav a.active::after{
   content:''; position:absolute; left:0; right:0; bottom:-6px; height:2px; background:var(--accent-500); border-radius:2px;
 }
@@ -171,7 +173,7 @@ h1,h2,h3,h4{
 .nav-toggle{
   display:none; background:none; border:none; padding:var(--sp-2);
 }
-.nav-toggle span{ display:block; width:22px; height:2px; background:var(--text-1); margin:5px 0; border-radius:2px; }
+.nav-toggle span{ display:block; width:22px; height:2px; background:var(--text-max); margin:5px 0; border-radius:2px; }
 
 /* Content needs to clear the floating pill since it's out of flow — except
    on the hero page, where the full-bleed stage is meant to run all the
@@ -387,14 +389,18 @@ body:has(.hero-pin) main{ padding-top:0; }
   position:absolute; z-index:2; left:var(--sp-8); bottom:var(--sp-10);
   display:flex; flex-direction:column; gap:var(--sp-2);
 }
-.hero-slide-eyebrow{ color:rgba(255,255,255,0.85); }
+/* The huge display font's "P"/"PH" glyphs carry noticeably more built-in
+   left-side bearing than the small eyebrow's letters, so at this scale the
+   two visually don't share a left edge even though both sit flush in the
+   same container — nudge the eyebrow right to match what the eye expects. */
+.hero-slide-eyebrow{ color:rgba(255,255,255,0.85); margin-left:clamp(3px, 0.7vw, 10px); }
 .hero-slide-title{
   font-size:clamp(48px,9vw,140px);
   color:#fff;
   line-height:0.92; letter-spacing:-0.01em;
 }
 .hero-credit{
-  position:absolute; z-index:2; left:0; right:0; bottom:var(--sp-4);
+  position:absolute; z-index:4; left:0; right:0; bottom:var(--sp-2);
   text-align:center;
   font-family:var(--font-display); font-size:12px; letter-spacing:0.06em;
   color:rgba(255,255,255,0.5);
@@ -410,71 +416,96 @@ body:has(.hero-pin) main{ padding-top:0; }
 
 /* ---------- Section ---------- */
 .section{ padding:var(--sp-16) 0; }
-.section.stack-intro{ padding-bottom:var(--sp-6); }
 .section-head{ margin-bottom:var(--sp-10); }
 .section-head h1{ font-size:clamp(30px,4.5vw,48px); }
 .section-head p.lead{ font-family:var(--font-body); text-transform:none; font-size:17px; color:var(--text-2); margin-top:var(--sp-3); max-width:60ch; }
 
-/* ---------- Cascading project card stack ---------- */
-/* Fallback (no JS / initHeroSlides-style safety): cards just render as a
-   plain vertical list — fully usable — until JS opts the container into
-   the scroll-driven stacked layout by adding .js-active. */
-.project-stack-pin{ position:relative; height:300vh; }
-.project-stack-stage{
-  position:sticky; top:96px;
-  height:calc(100vh - 96px);
-  display:flex; align-items:center;
-  overflow:hidden;
+/* ---------- Contact page ---------- */
+.contact-section{ position:relative; overflow:hidden; }
+/* Subtle mouse-follow glass highlight, contained to this section only —
+   JS sets --mx/--my from the mousemove position on hover. */
+.contact-section::before{
+  content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(var(--glass-rgb),0.4), transparent 60%);
+  opacity:0; transition:opacity 500ms var(--ease-ui);
 }
-.project-stack{ position:relative; width:100%; }
-.stack-card{
+.contact-section:hover::before{ opacity:1; }
+.contact-section .wrap{ position:relative; z-index:1; }
+
+.availability{
+  display:inline-flex; align-items:center; gap:var(--sp-2);
+  margin-top:var(--sp-5);
+  font-family:var(--font-display); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em;
+  color:var(--text-2);
+}
+.availability-dot{
+  width:8px; height:8px; border-radius:50%; background:#4ade80; flex-shrink:0;
+  animation:availability-pulse 2.2s ease-out infinite;
+}
+@keyframes availability-pulse{
+  0%{ box-shadow:0 0 0 0 rgba(74,222,128,0.5); }
+  70%{ box-shadow:0 0 0 8px rgba(74,222,128,0); }
+  100%{ box-shadow:0 0 0 0 rgba(74,222,128,0); }
+}
+
+.contact-list{ margin-top:var(--sp-12); border-top:1px solid var(--edge-a); }
+.contact-row{
   position:relative;
-  width:min(100%, 1040px);
-  margin:0 auto var(--sp-8);
-  border-radius:var(--r-xl);
-  overflow:hidden;
-  background:var(--surface-1);
-  border:1px solid var(--edge-a);
-  box-shadow:var(--shadow-sm);
+  display:flex; align-items:center; gap:var(--sp-6);
+  padding:var(--sp-8) 0;
+  border-bottom:1px solid var(--edge-a);
+  transition:padding-left 350ms var(--ease-ui);
 }
-.project-stack.js-active{ height:100%; }
-.project-stack.js-active .stack-card{
-  position:absolute; top:50%; left:50%;
-  width:min(78vw, 980px);
-  margin:0;
-  will-change:transform, opacity;
+.contact-row-index{
+  font-family:var(--font-display); font-size:13px; color:var(--text-2); flex-shrink:0; width:26px;
 }
-.stack-card-head{
-  display:flex; align-items:center; justify-content:space-between; gap:var(--sp-4);
-  padding:var(--sp-4) var(--sp-6);
-  background:var(--ink-900); color:#fff;
+.contact-row-main{ display:flex; flex-direction:column; gap:var(--sp-1); flex:1; min-width:0; }
+.contact-row-label{ font-family:var(--font-display); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-2); }
+.contact-row-value{
+  font-size:clamp(22px,4vw,40px); font-family:var(--font-display); letter-spacing:-0.01em;
+  transition:color 300ms var(--ease-ui);
 }
-.stack-card-date{
-  font-family:var(--font-display); font-size:12px; letter-spacing:0.06em;
-  color:rgba(255,255,255,0.6);
+.contact-row .arrow{
+  width:44px; height:44px; border-radius:var(--r-pill); border:1px solid var(--edge-b);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  opacity:0; transform:translateX(-8px);
+  transition:opacity 300ms var(--ease-ui), transform 300ms var(--ease-ui), background 300ms var(--ease-ui), border-color 300ms var(--ease-ui);
 }
-.stack-card-title{
-  font-family:var(--font-display); font-weight:700; text-transform:uppercase;
-  letter-spacing:0.04em; font-size:15px;
-}
-.stack-card-tag{
-  font-family:var(--font-display); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
-  color:rgba(255,255,255,0.6);
-}
-.stack-card-media{ position:relative; aspect-ratio:16/9; overflow:hidden; background:var(--surface-2); }
-.stack-card-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.stack-card-media .play-badge{
-  position:absolute; top:var(--sp-4); right:var(--sp-4); z-index:2;
+.contact-row .arrow svg{ width:16px; height:16px; stroke:var(--text-1); transition:stroke 200ms var(--ease-ui); }
+.contact-row:hover{ padding-left:var(--sp-4); }
+.contact-row:hover .contact-row-value{ color:var(--accent-500); }
+.contact-row:hover .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
+.contact-row:hover .arrow svg{ stroke:#fff; }
+
+.copy-btn{
+  position:relative; flex-shrink:0;
   width:40px; height:40px; border-radius:var(--r-pill);
-  background:rgba(18,17,16,0.55); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--edge-b); background:transparent; color:var(--text-2);
   display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  transition:border-color 200ms var(--ease-ui), color 200ms var(--ease-ui);
 }
-.stack-card-media .play-badge svg{ width:15px; height:15px; fill:#fff; stroke:none; margin-left:2px; }
-.project-stack.js-active .stack-card.is-active{ cursor:pointer; }
-@media (max-width:700px){
-  .project-stack-pin{ height:260vh; }
-  .stack-card-head{ padding:var(--sp-3) var(--sp-4); }
-  .stack-card-title{ font-size:12px; }
+.copy-btn:hover{ border-color:var(--text-1); color:var(--text-1); }
+.copy-btn svg{ width:16px; height:16px; }
+.copy-btn .icon-check{ display:none; }
+.copy-btn.is-copied .icon-copy{ display:none; }
+.copy-btn.is-copied .icon-check{ display:block; }
+.copy-btn.is-copied{ border-color:#4ade80; color:#4ade80; }
+.copy-tip{
+  position:absolute; bottom:calc(100% + var(--sp-2)); left:50%; transform:translateX(-50%) translateY(4px);
+  font-family:var(--font-display); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;
+  background:var(--text-1); color:var(--surface-1);
+  padding:var(--sp-1) var(--sp-3); border-radius:var(--r-pill);
+  opacity:0; pointer-events:none;
+  transition:opacity 200ms var(--ease-ui), transform 200ms var(--ease-ui);
+  white-space:nowrap;
+}
+.copy-btn.is-copied .copy-tip{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+@media (max-width:640px){
+  .contact-row{ gap:var(--sp-3); }
+  .contact-row-index{ display:none; }
+  .contact-row .arrow{ display:none; }
 }
 
 /* ---------- Grid / Cards (minimalist) ---------- */
@@ -484,28 +515,31 @@ body:has(.hero-pin) main{ padding-top:0; }
 @media (min-width:700px){ .grid{ grid-template-columns:1fr 1fr; gap:var(--sp-10) var(--sp-8); } }
 
 .card{
-  background:var(--surface-1);
+  position:relative;
+  background:transparent;
   border:1px solid var(--edge-a);
   border-radius:var(--r-xl);
   box-shadow:var(--shadow-sm);
   overflow:hidden;
   cursor:pointer;
   -webkit-mask-image:-webkit-radial-gradient(white, black);
-  transition:box-shadow 450ms var(--ease-ui), border-color var(--dur-med) var(--ease-ui);
+  filter:grayscale(0);
+  transition:box-shadow 450ms var(--ease-ui), border-color var(--dur-med) var(--ease-ui), filter 400ms var(--ease-ui);
 }
 .card:hover{
   box-shadow:var(--shadow-lg);
   border-color:var(--edge-b);
+  z-index:2;
 }
+/* Spotlight effect: hovering one card desaturates every other card in the grid. */
+.grid:hover .card{ filter:grayscale(1); }
+.grid:hover .card:hover{ filter:grayscale(0); }
 .card-media{
-  position:relative; aspect-ratio:5/4; overflow:hidden; background:var(--surface-2);
+  position:relative; aspect-ratio:4/3; overflow:hidden; background:var(--surface-2);
 }
 .card-media img{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-  filter:blur(0px);
-  transition:filter 400ms var(--ease-ui);
 }
-.card:hover .card-media img{ filter:blur(6px); }
 .card-media .tag{
   position:absolute; top:var(--sp-4); left:var(--sp-4); z-index:2;
   background:rgba(var(--glass-rgb),0.75); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
@@ -521,6 +555,13 @@ body:has(.hero-pin) main{ padding-top:0; }
 .card-body{
   padding:var(--sp-5) var(--sp-5);
   display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3);
+  background:rgba(var(--glass-rgb),0.14);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.35),
+    inset 0 -1px 6px rgba(0,0,0,0.08);
+  border-top:1px solid var(--edge-b);
 }
 .card-body .card-heading{ min-width:0; }
 .card-body h3{
@@ -570,7 +611,9 @@ body:has(.hero-pin) main{ padding-top:0; }
 /* ---------- Modal / Popup (near-fullpage but still an overlay) ---------- */
 .modal-overlay{
   position:fixed; inset:0; z-index:100;
-  background:var(--scrim);
+  background:rgba(var(--glass-rgb),0.45);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
   display:flex; align-items:center; justify-content:center;
   opacity:0; pointer-events:none;
   transition:opacity var(--dur-med) var(--ease-ui);
@@ -578,13 +621,18 @@ body:has(.hero-pin) main{ padding-top:0; }
 }
 .modal-overlay.is-open{ opacity:1; pointer-events:auto; }
 .modal{
-  background:var(--surface-1);
+  background:rgba(var(--glass-rgb),0.62);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
   border-radius:var(--r-xl);
   width:100%; max-width:1520px;
   height:92vh; max-height:1100px;
   display:flex; flex-direction:column;
   overflow:hidden;
-  box-shadow:var(--shadow-lg);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 1px rgba(255,255,255,0.3),
+    inset 0 -1px 6px rgba(0,0,0,0.08);
   border:1px solid var(--edge-a);
   transform:translateY(20px) scale(0.97);
   transition:transform var(--dur-med) var(--ease-in);
@@ -678,12 +726,20 @@ body:has(.hero-pin) main{ padding-top:0; }
   padding:var(--sp-1) var(--sp-4); border-radius:var(--r-pill);
 }
 
-body.modal-locked{ overflow:hidden; }
+html.modal-locked{ overflow:hidden; overscroll-behavior:none; }
+/* position:fixed (with JS setting `top` to the negative scroll offset) is what
+   actually prevents the page from jumping back to the top when a modal opens
+   and closes — overflow:hidden alone doesn't preserve scroll position once the
+   scrolling context changes. */
+body.modal-locked{
+  position:fixed; left:0; right:0; overflow:hidden; touch-action:none;
+}
 
 /* ---------- Modal tabs (Photos / Videos) ---------- */
 .modal-tabs{
   display:flex; gap:var(--sp-2); margin-bottom:var(--sp-6);
 }
+.modal-tabs[hidden]{ display:none; }
 .modal-tabs button{
   font-family:var(--font-display); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em;
   padding:var(--sp-2) var(--sp-5); border-radius:var(--r-pill);
@@ -694,49 +750,54 @@ body.modal-locked{ overflow:hidden; }
 .modal-pane{ display:none; }
 .modal-pane.is-active{ display:block; }
 
-/* ---------- Custom video player ---------- */
-/* Multiple videos are laid out as a proper grid gallery of poster
-   thumbnails (wrapping in rows, like the photo wall) rather than a
-   horizontal picker strip — only the friendly title is ever shown as a
-   caption, never a file name. */
-.video-list{
-  display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
-  gap:var(--sp-5); margin-bottom:var(--sp-6);
+/* ---------- Custom video player(s) ---------- */
+/* Every video gets its own independent, fully-playable box sitting side by
+   side in a wrapping row — like the photo wall, rather than one shared
+   player fed by a thumbnail strip. Each box adopts the video's own aspect
+   ratio once known (set inline via JS on loadedmetadata), so a portrait/
+   phone-shot clip gets a tall portrait box instead of a 16:9 letterbox. */
+.video-grid{
+  display:flex; flex-wrap:wrap; gap:var(--sp-4);
+  justify-content:center;
 }
-.vlist-item{
-  display:flex; flex-direction:column; gap:var(--sp-2);
-  background:none; border:none; padding:0; text-align:left;
-}
-.vlist-thumb{
-  position:relative; display:block; width:100%; aspect-ratio:16/9;
-  border-radius:var(--r-sm); overflow:hidden;
-  background:var(--surface-2); box-shadow:var(--shadow-sm);
-  outline:2px solid transparent; outline-offset:2px;
-  transition:outline-color var(--dur-fast) var(--ease-ui), transform var(--dur-med) var(--ease-ui);
-}
-.vlist-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-.vlist-play{
-  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  background:rgba(12,11,10,0.32);
-  opacity:0; transition:opacity var(--dur-fast) var(--ease-ui);
-}
-.vlist-play svg{ width:18px; height:18px; fill:#fff; }
-.vlist-item:hover .vlist-play{ opacity:1; }
-.vlist-item:hover .vlist-thumb{ transform:translateY(-3px); }
-.vlist-item.is-active .vlist-thumb{ outline-color:var(--accent-500); }
-.vlist-label{
-  font-family:var(--font-display); font-size:12px; font-weight:600; letter-spacing:0.03em;
-  color:var(--text-2);
-  transition:color var(--dur-fast) var(--ease-ui);
-}
-.vlist-item.is-active .vlist-label{ color:var(--text-1); }
-
 .video-player{
   position:relative; border-radius:var(--r-md); overflow:hidden;
-  background:var(--ink-900); aspect-ratio:16/9;
-  max-height:calc(92vh - 260px);
+  background:var(--ink-900);
+  aspect-ratio:16/9; /* fallback until the real ratio is known */
+  /* The box's only in-flow "content" is absolutely-positioned children (the
+     video itself, controls, play button), so it has no intrinsic size to
+     grow from — it must get an explicit dimension or it collapses to 0×0.
+     Giving it a height (like the portrait variant below) and letting width
+     follow via aspect-ratio keeps the real ratio exactly, so no black bars. */
+  flex:0 0 auto;
+  height:min(78vh, 720px);
+  width:auto;
+  max-width:100%;
+  display:flex; align-items:center; justify-content:center;
 }
-.video-player video{ width:100%; height:100%; display:block; background:#000; }
+.video-player.is-portrait{
+  /* Portrait/phone-shot clips stay side by side instead of wrapping into a
+     wide grid, but grow tall enough to actually use the popup's height
+     instead of leaving a large empty gap underneath. */
+  flex:0 0 auto;
+  height:min(80vh, 860px);
+  width:auto;
+  max-width:100%;
+}
+/* Local <video> elements get their real aspect-ratio set inline via JS once
+   loadedmetadata fires. YouTube iframes never fire that event, so embedded
+   portrait clips (e.g. Shorts) need the 9:16 ratio set explicitly here —
+   otherwise the box keeps the base 16:9 fallback and comes out sideways. */
+.video-player.is-embed.is-portrait{ aspect-ratio:9/16; }
+.video-player video{
+  position:absolute; inset:0; margin:auto;
+  width:100%; height:100%; object-fit:contain;
+  display:block; background:#000;
+}
+.video-player.is-embed iframe{
+  position:absolute; inset:0;
+  width:100%; height:100%; border:0; display:block; background:#000;
+}
 .video-player .vp-center{
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   background:rgba(22,21,19,0.15);
