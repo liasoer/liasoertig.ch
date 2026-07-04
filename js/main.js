@@ -850,7 +850,12 @@
         const titleRect = title.getBoundingClientRect();
         const captionRect = caption.getBoundingClientRect();
         const leftInset = captionRect.left - slideRect.left;
-        const titleCenterY = titleRect.top + titleRect.height / 2 - slideRect.top;
+        // The title is set (all caps, no descenders), but its line box still
+        // reserves the font's normal descender space below the baseline —
+        // so the box's true geometric center sits visibly lower than where
+        // the actual letterforms look centered. Biasing up from the exact
+        // 50% mark compensates for that reserved space.
+        const titleCenterY = titleRect.top + titleRect.height * 0.4 - slideRect.top;
         hint.style.top = titleCenterY + "px";
         hint.style.right = leftInset + "px";
       });
