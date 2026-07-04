@@ -419,7 +419,11 @@ body:has(.hero-pin) main{ padding-top:0; }
   .hero-frame .hero-slide{
     position:relative; top:auto; bottom:auto; left:auto; right:auto;
     border-radius:14px;
-    height:56vh;
+    /* 4:3 (or shorter) instead of a tall 56vh slab — both cards plus the
+       frame's own padding/gap now add up to comfortably under one screen
+       height, so the hero page needs no scrolling to see both on mobile. */
+    height:auto;
+    aspect-ratio:4/3;
     z-index:auto;
   }
   .hero-frame .hero-slide--projects,
@@ -615,7 +619,18 @@ body:has(.hero-pin) main{ padding-top:0; }
   transform:scale(1);
   transition:box-shadow 450ms var(--ease-ui), border-color var(--dur-med) var(--ease-ui), transform 350ms var(--ease-ui);
 }
-.card:hover, .card.is-inview{
+/* Real hover only — on touch devices tapping a card would otherwise also
+   trigger :hover (and stick until you tap elsewhere), which fought with the
+   scroll-driven .is-inview highlight below. */
+@media (hover:hover) and (pointer:fine){
+  .card:hover{
+    box-shadow:var(--shadow-lg);
+    border-color:var(--edge-b);
+    transform:scale(1.03);
+    z-index:2;
+  }
+}
+.card.is-inview{
   box-shadow:var(--shadow-lg);
   border-color:var(--edge-b);
   transform:scale(1.03);
@@ -661,7 +676,10 @@ body:has(.hero-pin) main{ padding-top:0; }
     0 -6px 20px rgba(0,0,0,0.12);
   transition:background var(--dur-med) var(--ease-ui), transform 350ms var(--ease-ui);
 }
-.card:hover .card-title-glass, .card.is-inview .card-title-glass{ background:rgba(var(--glass-rgb),0.22); }
+@media (hover:hover) and (pointer:fine){
+  .card:hover .card-title-glass{ background:rgba(var(--glass-rgb),0.22); }
+}
+.card.is-inview .card-title-glass{ background:rgba(var(--glass-rgb),0.22); }
 .card-title-glass-row{
   display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3);
 }
@@ -678,7 +696,10 @@ body:has(.hero-pin) main{ padding-top:0; }
   transition:opacity var(--dur-fast) var(--ease-ui), transform var(--dur-fast) var(--ease-ui), background var(--dur-fast) var(--ease-ui), border-color var(--dur-fast) var(--ease-ui);
 }
 .arrow svg{ width:14px; height:14px; stroke:#fff; transition:stroke var(--dur-fast) var(--ease-ui); }
-.card:hover .arrow, .card.is-inview .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
+@media (hover:hover) and (pointer:fine){
+  .card:hover .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
+}
+.card.is-inview .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
 
 /* ---------- Footer (always an inverse dark block, both themes) ---------- */
 .site-footer{
@@ -692,14 +713,17 @@ body:has(.hero-pin) main{ padding-top:0; }
      instead of stacking. */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start;
   justify-content:flex-end; gap:var(--sp-8);
-  text-align:right;
 }
-.footer-col{ align-items:flex-end; }
 @media (min-width:760px){
-  .footer-top{ justify-content:space-between; gap:var(--sp-16); text-align:left; }
-  .footer-col{ align-items:flex-start; }
+  .footer-top{ justify-content:space-between; gap:var(--sp-16); }
 }
 .footer-col{ display:flex; flex-direction:column; gap:var(--sp-4); }
+/* Navigate always hugs the left edge of its column, Get in touch always
+   hugs the right — independent of breakpoint, so the two columns read as
+   mirrored outward alignment whether they're grouped (mobile) or spread
+   apart (desktop). */
+.footer-col:first-child{ align-items:flex-start; text-align:left; }
+.footer-col:last-child{ align-items:flex-end; text-align:right; }
 .footer-col-label{
   font-family:var(--font-display); font-size:11px; font-weight:600;
   text-transform:uppercase; letter-spacing:0.12em; color:var(--text-3, var(--text-2));
