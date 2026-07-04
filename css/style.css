@@ -199,10 +199,10 @@ body:has(.hero-pin) main{ padding-top:0; }
   .site-header{ top:auto; bottom:12px; width:calc(100% - 24px); }
   .site-header .wrap{ height:54px; }
   main{ padding-top:0; padding-bottom:84px; }
-  /* Grid pages already get bottom clearance from the reduced section
-     padding above — the full 84px pill-clearance buffer isn't needed
-     here since the footer immediately follows with its own spacing. */
-  body:has(.grid) main, body:has(.contact-list) main{ padding-bottom:var(--sp-8); }
+  /* Pages with a footer hand the pill-clearance job to the footer's own
+     bottom padding instead (see .site-footer below), so main just needs a
+     small gap here, not the full 84px buffer. */
+  body:has(.grid) main, body:has(.contact-list) main{ padding-bottom:var(--sp-3); }
 }
 
 /* The fullscreen mobile menu is a plain, standalone element — NOT nested
@@ -702,6 +702,14 @@ body:has(.hero-pin) main{ padding-top:0; }
   background:var(--surface-0); color:var(--text-1);
   padding:var(--sp-16) 0 var(--sp-8);
   transition:background var(--dur-med) var(--ease-ui), color var(--dur-med) var(--ease-ui);
+}
+@media (max-width:700px){
+  .site-footer{
+    /* Less air above (the section right before it is already tight), but
+       more below — the bottom nav pill is fixed over the very bottom of
+       the screen and would otherwise sit on top of the last footer line. */
+    padding:var(--sp-8) 0 84px;
+  }
 }
 .footer-top{
   /* Nav + contact columns sit side by side on every screen size, spread to
