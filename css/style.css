@@ -171,7 +171,15 @@ h1,h2,h3,h4{
 }
 .header-actions{ display:flex; align-items:center; gap:var(--sp-4); }
 .nav-toggle{
-  display:none; background:none; border:none; padding:var(--sp-2);
+  display:none;
+  width:40px; height:40px;
+  align-items:center; justify-content:center;
+  border-radius:var(--r-pill);
+  border:1px solid var(--edge-b);
+  background:rgba(var(--glass-rgb),0.5);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  padding:var(--sp-2);
+  flex-shrink:0;
 }
 .nav-toggle span{ display:block; width:22px; height:2px; background:var(--text-max); margin:5px 0; border-radius:2px; }
 
@@ -198,7 +206,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   }
   .main-nav.is-open{ transform:translateX(0); }
   .main-nav a{ font-size:20px; }
-  .nav-toggle{ display:block; }
+  .nav-toggle{ display:flex; }
 }
 
 /* ---------- Theme toggle (glass pill) ---------- */

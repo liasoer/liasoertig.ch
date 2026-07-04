@@ -108,7 +108,7 @@ const PROJECTS = [
     accent: ["#dfbf5c", "#df925c", "#5cdf5c"],
     images: [],
     videos: [
-      { title: "Music Video", youtube: "uWKFiTOV2_w" }
+      { title: "Music Video", mux: "STQf6x00v7lEnbCljG02HGcLqI4q23n02DwC7YolmwKjZw" }
     ]
   },
   {

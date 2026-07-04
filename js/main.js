@@ -437,6 +437,20 @@
           allowfullscreen></iframe>
       </div>`;
         }
+        // Mux-hosted clips (player.mux.com) — same idea, Mux's own player UI.
+        if (v.mux) {
+          const titleParam = encodeURIComponent(v.title || item.title || "");
+          return `
+      <div class="video-player is-embed${v.portrait ? " is-portrait" : ""}">
+        ${countBadge}
+        <iframe
+          src="https://player.mux.com/${v.mux}?metadata-video-title=${titleParam}&video-title=${titleParam}"
+          title="${v.title}"
+          loading="lazy"
+          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>`;
+        }
         return `
       <div class="video-player">
         ${countBadge}
@@ -593,10 +607,26 @@
     if (!pin || !stage || !from || !to) return;
 
     // Some browsers ignore/deprioritize the autoplay attribute — nudge any
-    // hero-slide video explicitly, silently ignoring rejection.
-    document.querySelectorAll(".hero-slide video").forEach((v) => {
+    // hero-slide video explicitly, silently ignoring rejection. Setting the
+    // `muted` property (not just the attribute) is what actually satisfies
+    // mobile autoplay policies in some browsers.
+    const heroVideos = Array.from(document.querySelectorAll(".hero-slide video"));
+    heroVideos.forEach((v) => {
+      v.muted = true;
       v.play().catch(() => {});
     });
+    // If the very first attempt was still blocked (some mobile browsers
+    // reject autoplay until the page has had any user interaction at all),
+    // retry once on the first tap/click/scroll anywhere on the page.
+    function retryHeroPlayback() {
+      heroVideos.forEach((v) => { if (v.paused) v.play().catch(() => {}); });
+      document.removeEventListener("touchstart", retryHeroPlayback);
+      document.removeEventListener("click", retryHeroPlayback);
+      window.removeEventListener("scroll", retryHeroPlayback);
+    }
+    document.addEventListener("touchstart", retryHeroPlayback, { passive: true, once: true });
+    document.addEventListener("click", retryHeroPlayback, { once: true });
+    window.addEventListener("scroll", retryHeroPlayback, { passive: true, once: true });
 
     let ticking = false;
     let snapTimer = null;
