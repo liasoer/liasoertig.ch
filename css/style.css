@@ -202,7 +202,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   /* Grid pages already get bottom clearance from the reduced section
      padding above — the full 84px pill-clearance buffer isn't needed
      here since the footer immediately follows with its own spacing. */
-  body:has(.grid) main{ padding-bottom:var(--sp-8); }
+  body:has(.grid) main, body:has(.contact-list) main{ padding-bottom:var(--sp-8); }
 }
 
 /* The fullscreen mobile menu is a plain, standalone element — NOT nested
@@ -497,13 +497,13 @@ body:has(.hero-pin) main{ padding-top:0; }
 /* Grid pages (Client Projects / Editorial) already hand off to the footer's
    own generous top padding right after — stacking the section's full
    bottom padding on top of that just left a dead gap under the last card. */
-.section:has(.grid){ padding-bottom:var(--sp-6); }
+.section:has(.grid), .section:has(.contact-list){ padding-bottom:var(--sp-6); }
 @media (max-width:700px){
   /* The navbar sits at the bottom of the screen on mobile now, so there's
      no floating pill at the top competing for space — the old top padding
      just left a big empty gap above the page title. */
   .section{ padding-top:var(--sp-8); }
-  .section:has(.grid){ padding-bottom:var(--sp-4); }
+  .section:has(.grid), .section:has(.contact-list){ padding-bottom:var(--sp-4); }
 }
 .section-head{ margin-bottom:var(--sp-10); }
 .section-head h1{ font-size:clamp(30px,4.5vw,48px); }
@@ -615,7 +615,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   transform:scale(1);
   transition:box-shadow 450ms var(--ease-ui), border-color var(--dur-med) var(--ease-ui), transform 350ms var(--ease-ui);
 }
-.card:hover{
+.card:hover, .card.is-inview{
   box-shadow:var(--shadow-lg);
   border-color:var(--edge-b);
   transform:scale(1.03);
@@ -623,6 +623,11 @@ body:has(.hero-pin) main{ padding-top:0; }
 }
 .card-media{
   position:relative; aspect-ratio:4/3; overflow:hidden; background:var(--surface-2);
+  /* Clip in its own box (matching .card's radius) so the glass panel below
+     — positioned relative to this exact box — is guaranteed to sit flush
+     with the image's rounded corners instead of relying on the parent
+     .card's separate clip-mask, which left a hairline gap at the corners. */
+  border-radius:var(--r-xl);
 }
 .card-media img{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
@@ -656,7 +661,7 @@ body:has(.hero-pin) main{ padding-top:0; }
     0 -6px 20px rgba(0,0,0,0.12);
   transition:background var(--dur-med) var(--ease-ui), transform 350ms var(--ease-ui);
 }
-.card:hover .card-title-glass{ background:rgba(var(--glass-rgb),0.22); }
+.card:hover .card-title-glass, .card.is-inview .card-title-glass{ background:rgba(var(--glass-rgb),0.22); }
 .card-title-glass-row{
   display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3);
 }
@@ -673,7 +678,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   transition:opacity var(--dur-fast) var(--ease-ui), transform var(--dur-fast) var(--ease-ui), background var(--dur-fast) var(--ease-ui), border-color var(--dur-fast) var(--ease-ui);
 }
 .arrow svg{ width:14px; height:14px; stroke:#fff; transition:stroke var(--dur-fast) var(--ease-ui); }
-.card:hover .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
+.card:hover .arrow, .card.is-inview .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
 
 /* ---------- Footer (always an inverse dark block, both themes) ---------- */
 .site-footer{
@@ -682,10 +687,17 @@ body:has(.hero-pin) main{ padding-top:0; }
   transition:background var(--dur-med) var(--ease-ui), color var(--dur-med) var(--ease-ui);
 }
 .footer-top{
-  display:flex; flex-direction:column; gap:var(--sp-8);
+  /* Nav + contact columns sit side by side, flush to the right, on every
+     screen size — including mobile, so they read as one horizontal row
+     instead of stacking. */
+  display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start;
+  justify-content:flex-end; gap:var(--sp-8);
+  text-align:right;
 }
+.footer-col{ align-items:flex-end; }
 @media (min-width:760px){
-  .footer-top{ flex-direction:row; align-items:flex-start; justify-content:space-between; gap:var(--sp-16); }
+  .footer-top{ justify-content:space-between; gap:var(--sp-16); text-align:left; }
+  .footer-col{ align-items:flex-start; }
 }
 .footer-col{ display:flex; flex-direction:column; gap:var(--sp-4); }
 .footer-col-label{

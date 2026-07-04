@@ -185,6 +185,53 @@
         }
       });
     });
+
+    initMobileCardFocus(container);
+  }
+
+  /* On mobile there's no hover, so instead we track scroll position and give
+     the "hover" look (.is-inview) to whichever card is currently most
+     visible in the viewport — as the next card scrolls fully into view it
+     takes over and the previous one loses the highlight. */
+  function initMobileCardFocus(container) {
+    const mq = window.matchMedia("(max-width:700px)");
+    let observer = null;
+
+    const disconnect = () => {
+      if (observer) { observer.disconnect(); observer = null; }
+      container.querySelectorAll(".card.is-inview").forEach((c) => c.classList.remove("is-inview"));
+    };
+
+    const connect = () => {
+      const cards = Array.from(container.querySelectorAll(".card"));
+      if (!cards.length) return;
+      const ratios = new Map(cards.map((c) => [c, 0]));
+      let active = null;
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => ratios.set(entry.target, entry.intersectionRatio));
+          let best = null, bestRatio = 0.15;
+          ratios.forEach((ratio, card) => {
+            if (ratio > bestRatio) { bestRatio = ratio; best = card; }
+          });
+          if (best !== active) {
+            if (active) active.classList.remove("is-inview");
+            if (best) best.classList.add("is-inview");
+            active = best;
+          }
+        },
+        { threshold: Array.from({ length: 21 }, (_, i) => i / 20) }
+      );
+      cards.forEach((c) => observer.observe(c));
+    };
+
+    const sync = () => {
+      disconnect();
+      if (mq.matches) connect();
+    };
+    sync();
+    mq.addEventListener("change", sync);
   }
 
   /* ---------- Lightbox (fullscreen single photo, layered above the modal) ---------- */
