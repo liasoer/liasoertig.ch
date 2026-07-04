@@ -664,6 +664,20 @@ body:has(.hero-pin) main{ padding-top:0; }
 
 .modal-body{ overflow-y:auto; padding:var(--sp-8); flex:1; }
 
+/* On small screens the popup takes over the whole viewport instead of
+   floating as a card — no rounded corners, no surrounding gap, and it uses
+   dvh so mobile browser chrome (address bar) doesn't clip the bottom. */
+@media (max-width:700px){
+  .modal-overlay{ padding:0; }
+  .modal{
+    width:100%; max-width:none;
+    height:100vh; height:100dvh; max-height:none;
+    border-radius:0; border:none;
+  }
+  .modal-header{ padding:var(--sp-5) var(--sp-5) var(--sp-3); }
+  .modal-body{ padding:var(--sp-5); }
+}
+
 /* ---------- Masonry photo wall ---------- */
 .masonry{
   column-count:1; column-gap:var(--sp-4);
@@ -789,6 +803,35 @@ body.modal-locked{
    portrait clips (e.g. Shorts) need the 9:16 ratio set explicitly here —
    otherwise the box keeps the base 16:9 fallback and comes out sideways. */
 .video-player.is-embed.is-portrait{ aspect-ratio:9/16; }
+
+/* On mobile, multiple videos become a horizontal swipe carousel instead of
+   stacking vertically — each slide is sized a little narrower than the
+   viewport so the next one peeks in at the edge, making it obvious (along
+   with the "N / total" badge above) that there's more than one to see. */
+@media (max-width:700px){
+  .video-grid{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    justify-content:flex-start;
+    margin:0 calc(var(--sp-5) * -1);
+    padding:0 var(--sp-5) var(--sp-2);
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .video-grid::-webkit-scrollbar{ display:none; }
+  .video-player{
+    scroll-snap-align:center;
+    height:auto;
+    width:85vw;
+    max-width:85vw;
+  }
+  .video-player.is-portrait{
+    height:auto;
+    width:70vw;
+    max-width:70vw;
+  }
+}
 .video-player video{
   position:absolute; inset:0; margin:auto;
   width:100%; height:100%; object-fit:contain;
@@ -797,6 +840,17 @@ body.modal-locked{
 .video-player.is-embed iframe{
   position:absolute; inset:0;
   width:100%; height:100%; border:0; display:block; background:#000;
+}
+/* Position indicator ("2 / 3") shown whenever a tile has more than one
+   video — makes it obvious there's more to see even when only one clip
+   is visible at a time (e.g. the mobile swipe carousel below). */
+.video-player .vp-count{
+  position:absolute; top:var(--sp-3); left:var(--sp-3); z-index:3;
+  font-family:var(--font-display); font-size:11px; font-weight:600; letter-spacing:0.05em;
+  color:#fff; background:rgba(18,17,16,0.6);
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  padding:var(--sp-1) var(--sp-3); border-radius:var(--r-pill);
+  pointer-events:none;
 }
 .video-player .vp-center{
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;

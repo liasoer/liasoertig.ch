@@ -418,13 +418,17 @@
     const gridEl = el.querySelector(".m-video-grid");
     const videos = item.videos || [];
 
+    const showCount = videos.length > 1;
+
     gridEl.innerHTML = videos
-      .map((v) => {
+      .map((v, i) => {
+        const countBadge = showCount ? `<span class="vp-count">${i + 1} / ${videos.length}</span>` : "";
         // YouTube-hosted clips just embed the standard player — no custom
         // controls to wire up, since YouTube brings its own.
         if (v.youtube) {
           return `
       <div class="video-player is-embed${v.portrait ? " is-portrait" : ""}">
+        ${countBadge}
         <iframe
           src="https://www.youtube.com/embed/${v.youtube}?modestbranding=1&rel=0&iv_load_policy=3"
           title="${v.title}"
@@ -435,6 +439,7 @@
         }
         return `
       <div class="video-player">
+        ${countBadge}
         <video playsinline poster="${v.poster || item.cover}" preload="metadata">
           <source src="${v.src}" type="video/mp4">
         </video>
