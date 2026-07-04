@@ -422,6 +422,9 @@
     // Single clip: no carousel needed, so center it instead of the
     // peek-to-the-side alignment used for swipeable multi-video sets.
     gridEl.classList.toggle("is-single", videos.length === 1);
+    // Some projects want the horizontal swipe carousel on desktop too
+    // (see .video-grid.is-carousel in style.css), not just on mobile.
+    gridEl.classList.toggle("is-carousel", !!item.videosCarousel);
 
     gridEl.innerHTML = videos
       .map((v, i) => {

@@ -203,7 +203,7 @@ body:has(.hero-pin) main{ padding-top:0; }
 
 @media (max-width:760px){
   .main-nav{
-    position:fixed; inset:0 0 78px 0;
+    position:fixed; inset:0;
     background:rgba(var(--glass-rgb),0.92);
     backdrop-filter:blur(24px) saturate(180%);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
@@ -460,6 +460,12 @@ body:has(.hero-pin) main{ padding-top:0; }
 
 /* ---------- Section ---------- */
 .section{ padding:var(--sp-16) 0; }
+@media (max-width:700px){
+  /* The navbar sits at the bottom of the screen on mobile now, so there's
+     no floating pill at the top competing for space — the old top padding
+     just left a big empty gap above the page title. */
+  .section{ padding-top:var(--sp-8); }
+}
 .section-head{ margin-bottom:var(--sp-10); }
 .section-head h1{ font-size:clamp(30px,4.5vw,48px); }
 .section-head p.lead{ font-family:var(--font-body); text-transform:none; font-size:17px; color:var(--text-2); margin-top:var(--sp-3); max-width:60ch; }
@@ -813,6 +819,13 @@ body.modal-locked{
 .modal-tabs button.is-active{ background:var(--text-1); color:var(--surface-0); }
 .modal-pane{ display:none; }
 .modal-pane.is-active{ display:block; }
+/* Videos pane centers its content vertically when the clips don't fill the
+   popup's full height, instead of sitting flush against the top. */
+.modal-pane[data-pane="videos"].is-active{
+  display:flex; align-items:center; justify-content:center;
+  min-height:100%;
+}
+.modal-pane[data-pane="videos"].is-active .video-grid{ width:100%; }
 
 /* ---------- Custom video player(s) ---------- */
 /* Every video gets its own independent, fully-playable box sitting side by
@@ -853,6 +866,19 @@ body.modal-locked{
    portrait clips (e.g. Shorts) need the 9:16 ratio set explicitly here —
    otherwise the box keeps the base 16:9 fallback and comes out sideways. */
 .video-player.is-embed.is-portrait{ aspect-ratio:9/16; }
+
+/* Some projects (e.g. a batch of short portrait clips) opt into the same
+   horizontal swipe-carousel treatment on desktop too, instead of wrapping
+   into a grid — set via item.videosCarousel in data.js. */
+.video-grid.is-carousel{
+  flex-wrap:nowrap;
+  justify-content:flex-start;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:var(--sp-2);
+}
+.video-grid.is-carousel .video-player{ scroll-snap-align:center; }
 
 /* On mobile, multiple videos become a horizontal swipe carousel instead of
    stacking vertically — each slide is sized a little narrower than the

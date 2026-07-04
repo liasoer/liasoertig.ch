@@ -27,7 +27,7 @@ const PROJECTS = [
       },
       {
         title: "Trailer",
-        mux: "3N7Qd029Zc28E26SLEwvURoPB7FGyEAzf025fVcOG4Hu4"
+        youtube: "jFUFUN_sSaA"
       }
     ],
     images: []
@@ -43,13 +43,14 @@ const PROJECTS = [
     cover: "assets/posters/nali.jpg",
     accent: ["#5c9edf", "#5cdf7d", "#dfb95c"],
     images: [],
+    videosCarousel: true,
     videos: [
-      { title: "Pre-Reel 1", mux: "5UGY02cmeuuxjgq01W9NpDfd7SHinQgWdiEtT02U00pUI02Q", portrait: true },
-      { title: "Pre-Reel 2", mux: "cJA2S1zR00ooxUA9rgwGW1wugpuPS5KnjmoTuc1wbBa8", portrait: true },
-      { title: "Pre-Reel 3", mux: "vqbx4zN6bdmLPJFN1st102cIyYsRcqY9zQdGa2MZcbEA", portrait: true },
-      { title: "After-Reel 1", mux: "HXJDAWTPtnfUvtQOwfV8wtaGejCmeubgEMOXxsdnNvU", portrait: true },
-      { title: "After-Reel 2", mux: "U26djCgxfLnfID9n71JektFraDEyXnkyjMOMjLGuG00Y", portrait: true },
-      { title: "After-Reel 3", mux: "B6Dr1HTA5PcBs5kyXU79Ohn7XQ0201pUaWEKtkmGo7lVM", portrait: true }
+      { title: "Pre-Reel 1", youtube: "PiLUYnT9ymM", portrait: true },
+      { title: "Pre-Reel 2", youtube: "f9QHsYk7BBA", portrait: true },
+      { title: "Pre-Reel 3", youtube: "LS-gw1JQzHU", portrait: true },
+      { title: "After-Reel 1", youtube: "Cj76jSYAK3w", portrait: true },
+      { title: "After-Reel 2", youtube: "n2IM4hdluWk", portrait: true },
+      { title: "After-Reel 3", youtube: "0wNqssDT_o8", portrait: true }
     ]
   },
   {
@@ -78,7 +79,7 @@ const PROJECTS = [
     accent: ["#df765c", "#dfa15c", "#df5c9e"],
     images: [],
     videos: [
-      { title: "Video", mux: "n8aoF602Qv9sQooIBfKIJx00Gklo3ZLLXOSycTKGh02Swg", portrait: true }
+      { title: "Video", youtube: "p4yqaqwlI8E", portrait: true }
     ]
   },
   {
@@ -108,7 +109,7 @@ const PROJECTS = [
     accent: ["#dfbf5c", "#df925c", "#5cdf5c"],
     images: [],
     videos: [
-      { title: "Music Video", mux: "STQf6x00v7lEnbCljG02HGcLqI4q23n02DwC7YolmwKjZw" }
+      { title: "Music Video", youtube: "uWKFiTOV2_w" }
     ]
   },
   {
@@ -123,8 +124,9 @@ const PROJECTS = [
     accent: ["#df7d5c", "#dfba5c", "#5c88df"],
     images: [],
     videos: [
-      { title: "Reel 1", src: "assets/video/camillesophie-reel1.mp4", poster: "assets/posters/camillesophie-reel1-poster.jpg" },
-      { title: "Reel 3", src: "assets/video/camillesophie-reel3.mp4", poster: "assets/posters/camillesophie-reel3-poster.jpg" }
+      { title: "Reel 1", youtube: "0s_XTEDXass", portrait: true },
+      { title: "Reel 2", youtube: "S1jCECFDiBU", portrait: true },
+      { title: "Reel 3", youtube: "JDGXIhkcFlY", portrait: true }
     ]
   },
 ];
