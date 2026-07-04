@@ -396,14 +396,18 @@ body:has(.hero-pin) main{ padding-top:0; }
      stack is stretched via flex to fill the available screen height (minus
      the bottom nav-pill clearance main already reserves) so the two cards
      grow to use the space instead of leaving it empty below them. */
-  .hero-pin{ height:auto; min-height:calc(100svh - 84px); display:flex; }
-  .hero-stage{ position:static; height:auto; overflow:visible; background:none; flex:1; display:flex; }
+  .hero-pin{ height:auto; min-height:calc(100svh - 84px); display:flex; flex-direction:column; }
+  .hero-stage{
+    position:static; height:auto; overflow:visible; background:none;
+    flex:1 1 auto; min-height:0;
+    display:flex; flex-direction:column;
+  }
   .hero-frame{
     position:static; inset:auto;
     display:flex; flex-direction:column; gap:12px;
     padding:16px;
     border-radius:0;
-    flex:1;
+    flex:1 1 auto; min-height:0;
   }
 }
 .hero-slide{
@@ -425,10 +429,12 @@ body:has(.hero-pin) main{ padding-top:0; }
     border-radius:14px;
     /* Each card grows to fill its equal share of whatever height the frame
        has available (capped at 4:3 so they never get too tall/slab-like)
-       instead of a fixed aspect-ratio — this uses the space the removed
-       credit line freed up instead of leaving it blank. */
+       instead of a fixed aspect-ratio. A concrete min-height floor is a
+       safety net — without it, a nested auto-height flex chain collapsing
+       to 0 anywhere upstream would leave the video in a zero-height box,
+       which looks exactly like "the video won't load" even though it is. */
     flex:1 1 0;
-    min-height:0;
+    min-height:180px;
     max-height:75vw;
     height:auto;
     aspect-ratio:auto;
