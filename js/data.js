@@ -136,6 +136,34 @@ const PROJECTS = [
 /* ---------------------------------------------------------------------- */
 const PHOTOGRAPHY = [
   {
+    slug: "dear-diary",
+    title: "DEAR DIARY",
+    subtitle: "Minyar",
+    category: "Music Video",
+    instagram: null,
+    year: "2026",
+    description: "Music video \"Dear Diary\" — camera and edit.",
+    cover: "https://img.youtube.com/vi/Z_X4uB03cnQ/maxresdefault.jpg",
+    images: [],
+    videos: [
+      { title: "Music Video", youtube: "Z_X4uB03cnQ" }
+    ]
+  },
+  {
+    slug: "into-that-goodnight",
+    title: "Into That Goodnight",
+    subtitle: "Elin",
+    category: "Video",
+    instagram: null,
+    year: "2026",
+    description: "Music video \"Into That Goodnight\" with Elin — camera and edit.",
+    cover: "assets/posters/into-that-goodnight-cover.png",
+    images: [],
+    videos: [
+      { title: "Video", youtube: "lCqNFMANtN0" }
+    ]
+  },
+  {
     slug: "camille-golf",
     title: "Camille",
     instagram: "camillesjournal",
@@ -534,20 +562,6 @@ const PHOTOGRAPHY = [
       CDN + "a3de9e73-bc75-4f7b-bd2e-21a52e3aee78/DSC08265.jpg",
       CDN + "b7b6c130-fa86-41e8-8d14-210e6db73bd9/DSC08232.jpg",
       CDN + "28571601-ec0a-4af2-9fde-4d37ecc1e38f/DSC08180.jpg",
-    ]
-  },
-  {
-    slug: "into-that-goodnight",
-    title: "Into That Goodnight",
-    subtitle: "Elin",
-    category: "Video",
-    instagram: null,
-    year: "2026",
-    description: "Music video \"Into That Goodnight\" with Elin — camera and edit.",
-    cover: "assets/posters/into-that-goodnight-cover.png",
-    images: [],
-    videos: [
-      { title: "Video", youtube: "lCqNFMANtN0" }
     ]
   },
 ];
