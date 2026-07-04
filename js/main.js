@@ -622,8 +622,13 @@
     if (hasVideo) renderVideoGrid(item);
     else {
       activePlayers.forEach((ctrl) => ctrl.pause());
-      el.querySelector(".m-video-grid").innerHTML = "";
       activePlayers = [];
+      // Video-less, photo-less items (e.g. a music video still in edit)
+      // show a simple placeholder instead of a blank pane.
+      el.querySelector(".m-video-grid").innerHTML =
+        !hasPhotos && item.comingSoon
+          ? `<p class="coming-soon">${item.comingSoon}</p>`
+          : "";
     }
 
     el.classList.add("is-open");
@@ -730,6 +735,7 @@
       if (!v.paused) return;
       v.play().catch(() => {});
     }
+    function attemptPlayAll() { heroVideos.forEach(attemptPlay); }
 
     heroVideos.forEach((v) => {
       v.muted = true;
@@ -740,31 +746,50 @@
       // .load() explicitly (in addition to preload="auto") pushes the
       // browser to start fetching right away instead of waiting for that.
       v.load();
-      attemptPlay(v);
-      // The very first play() call can be rejected on some mobile browsers
-      // simply because it fires before the page/video is "settled" — not
-      // because of an actual gesture requirement. Retrying as soon as the
-      // video reports it actually has data, with zero gesture involved,
-      // catches that case without needing the visitor to tap anything.
-      v.addEventListener("loadeddata", () => attemptPlay(v));
-      v.addEventListener("canplay", () => attemptPlay(v));
     });
-    // Belt-and-braces: a few gesture-free retries shortly after load, plus a
-    // retry once the intro loader animation finishes (the hero is genuinely
-    // visible for the first time at that point) and whenever the tab
-    // regains visibility — covers browsers that reject the very first
-    // attempt but have no real gesture requirement.
-    [200, 800, 2000].forEach((delay) => {
-      setTimeout(() => heroVideos.forEach(attemptPlay), delay);
-    });
-    document.addEventListener("lo:intro-done", () => heroVideos.forEach(attemptPlay));
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") heroVideos.forEach(attemptPlay);
-    });
+
+    // The intro loader (see initLoader above) is a fullscreen, fully opaque
+    // overlay sitting above the hero for ~2.5s on a visitor's very first
+    // pageview this session. Calling .play() while the video is completely
+    // hidden behind it makes iOS Safari mark the element ineligible for
+    // autoplay for the rest of that page load — after that, NO amount of
+    // gesture-free retrying works anymore, only a real tap does. So every
+    // attempt below is gated on the loader genuinely being gone first,
+    // instead of firing blind while it's still covering the video.
+    // initLoader() (above, runs first) already removes .site-loader from the
+    // DOM synchronously on repeat visits this session, so simply checking
+    // whether it's still present tells us whether it's genuinely blocking.
+    const loaderBlocking = !!document.querySelector(".site-loader");
+
+    function startAutoplayAttempts() {
+      attemptPlayAll();
+      // The very first play() call can still be rejected on some mobile
+      // browsers simply because it fires before the video is "settled" —
+      // not because of an actual gesture requirement. Retrying as soon as
+      // the video reports it actually has data, with zero gesture
+      // involved, catches that case without needing a tap.
+      heroVideos.forEach((v) => {
+        v.addEventListener("loadeddata", () => attemptPlay(v));
+        v.addEventListener("canplay", () => attemptPlay(v));
+      });
+      // Belt-and-braces: a few more gesture-free retries shortly after,
+      // and whenever the tab regains visibility.
+      [200, 800, 2000].forEach((delay) => setTimeout(attemptPlayAll, delay));
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") attemptPlayAll();
+      });
+    }
+
+    if (loaderBlocking) {
+      document.addEventListener("lo:intro-done", startAutoplayAttempts, { once: true });
+    } else {
+      startAutoplayAttempts();
+    }
+
     // If a browser genuinely requires a gesture before allowing autoplay at
     // all, this is the final fallback — first tap/click/scroll anywhere.
     function retryHeroPlayback() {
-      heroVideos.forEach(attemptPlay);
+      attemptPlayAll();
       document.removeEventListener("touchstart", retryHeroPlayback);
       document.removeEventListener("click", retryHeroPlayback);
       window.removeEventListener("scroll", retryHeroPlayback);

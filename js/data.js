@@ -21,7 +21,7 @@ const PROJECTS = [
     instagram: null,
     year: "2025",
     description: "A look inside the Doppelstrich exhibition — craft, wood and process, captured in motion.",
-    cover: "assets/posters/doppelstrich-ausstellung.jpg",
+    cover: "assets/posters/lothar-moebel-cover.png",
     accent: ["#df765c", "#dfa15c", "#df5c9e"],
     images: [],
     videos: [
@@ -36,7 +36,7 @@ const PROJECTS = [
     instagram: "camillesjournal",
     year: "2024",
     description: "Double portrait with Camille and Sophie, in motion — the video reels from the same session.",
-    cover: "assets/posters/camillesophie-videos-cover.jpg",
+    cover: "assets/posters/dancing-cover.png",
     accent: ["#df7d5c", "#dfba5c", "#5c88df"],
     images: [],
     videosCarousel: true,
@@ -54,7 +54,7 @@ const PROJECTS = [
     instagram: null,
     year: "2025",
     description: "Reels and edits from the NALI Bubble Event — pure motion work, no photo set for this one.",
-    cover: "assets/posters/nali.jpg",
+    cover: "assets/posters/bubble-event-cover.png",
     accent: ["#5c9edf", "#5cdf7d", "#dfb95c"],
     images: [],
     videosCarousel: true,
@@ -75,12 +75,10 @@ const PROJECTS = [
     instagram: null,
     year: "2025",
     description: "Music video \"Look in the Mirror\" — staged visual language, camera and edit.",
-    cover: "assets/posters/look-in-the-mirror.jpg",
+    cover: "assets/posters/look-in-the-mirror-cover.png",
     accent: ["#dfbf5c", "#df925c", "#5cdf5c"],
     images: [],
-    videos: [
-      { title: "Music Video", youtube: "uWKFiTOV2_w" }
-    ]
+    comingSoon: "Coming soon"
   },
   {
     slug: "to",
@@ -90,12 +88,10 @@ const PROJECTS = [
     instagram: null,
     year: "2025",
     description: "Music video production for Enni — camera and edit.",
-    cover: "assets/posters/enni-musicvideo.jpg",
+    cover: "assets/posters/to-enni-cover.png",
     accent: ["#dadf5c", "#a3df5c", "#dfb05c"],
     images: [],
-    videos: [
-      { title: "Music Video", youtube: "VUdOYr9K__k" }
-    ]
+    comingSoon: "Coming soon"
   },
   {
     slug: "camille-showreel",
@@ -105,10 +101,10 @@ const PROJECTS = [
     instagram: null,
     year: null,
     description: "Showreel for Camille — a compilation of motion work.",
-    cover: "https://img.youtube.com/vi/DgJ82qPwqUA/maxresdefault.jpg",
+    cover: "assets/posters/camille-showreel-cover.png",
     images: [],
     videos: [
-      { title: "Showreel", youtube: "DgJ82qPwqUA" }
+      { title: "Showreel", youtube: "0Q7BkdLOr28" }
     ]
   },
   {
@@ -119,16 +115,16 @@ const PROJECTS = [
     instagram: "kuenstlercantina",
     year: "2024",
     description: "Concert nights at Künstlercantina — stage light, crowd energy, and the pulse of small venues.",
-    cover: "assets/posters/kuenstlercantina-cover.jpg",
+    cover: "assets/posters/kuenstlercantina-cover.png",
     accent: ["#5c81df", "#df9f5c", "#df5c9e"],
     videos: [
       {
         title: "Imagefilm",
-        youtube: "FuKDkmdblTw"
+        youtube: "6s4d2hCbOB4"
       },
       {
         title: "Trailer",
-        youtube: "jFUFUN_sSaA"
+        youtube: "jNn2TTwVeKw"
       }
     ],
     images: []
@@ -437,10 +433,6 @@ const PHOTOGRAPHY = [
     year: "2024",
     description: "Double portrait with Camille and Sophie — friendship, movement, plenty of spontaneous moments.",
     cover: CDN + "f2810ccc-d612-4a35-bba1-f3d94ab15a78/LO-03325.jpg",
-    videos: [
-      { title: "Reel 1", src: "assets/video/camillesophie-reel1.mp4", poster: CDN + "f2810ccc-d612-4a35-bba1-f3d94ab15a78/LO-03325.jpg" },
-      { title: "Reel 3", src: "assets/video/camillesophie-reel3.mp4", poster: CDN + "781fdde6-19e8-428b-9076-ff31ac8554fd/LO-02547.jpg" }
-    ],
     images: [
       CDN + "f2810ccc-d612-4a35-bba1-f3d94ab15a78/LO-03325.jpg",
       CDN + "781fdde6-19e8-428b-9076-ff31ac8554fd/LO-02547.jpg",
@@ -542,6 +534,20 @@ const PHOTOGRAPHY = [
       CDN + "a3de9e73-bc75-4f7b-bd2e-21a52e3aee78/DSC08265.jpg",
       CDN + "b7b6c130-fa86-41e8-8d14-210e6db73bd9/DSC08232.jpg",
       CDN + "28571601-ec0a-4af2-9fde-4d37ecc1e38f/DSC08180.jpg",
+    ]
+  },
+  {
+    slug: "into-that-goodnight",
+    title: "Into That Goodnight",
+    subtitle: "Elin",
+    category: "Video",
+    instagram: null,
+    year: "2026",
+    description: "Music video \"Into That Goodnight\" with Elin — camera and edit.",
+    cover: "assets/posters/into-that-goodnight-cover.png",
+    images: [],
+    videos: [
+      { title: "Video", youtube: "lCqNFMANtN0" }
     ]
   },
 ];
