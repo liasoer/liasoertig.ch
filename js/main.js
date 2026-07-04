@@ -419,6 +419,9 @@
     const videos = item.videos || [];
 
     const showCount = videos.length > 1;
+    // Single clip: no carousel needed, so center it instead of the
+    // peek-to-the-side alignment used for swipeable multi-video sets.
+    gridEl.classList.toggle("is-single", videos.length === 1);
 
     gridEl.innerHTML = videos
       .map((v, i) => {
@@ -526,6 +529,11 @@
     overlayEl.classList.remove("is-open");
     unlockScroll();
     activePlayers.forEach((ctrl) => ctrl.pause());
+    // Embeds (YouTube/Mux iframes) keep playing unless their src is cleared —
+    // pausing only stops the plain <video> players above.
+    overlayEl.querySelectorAll(".video-player.is-embed iframe").forEach((f) => {
+      f.src = "about:blank";
+    });
     closeLightbox();
   }
 
@@ -627,6 +635,12 @@
     document.addEventListener("touchstart", retryHeroPlayback, { passive: true, once: true });
     document.addEventListener("click", retryHeroPlayback, { once: true });
     window.addEventListener("scroll", retryHeroPlayback, { passive: true, once: true });
+
+    // On mobile the two slides are plain side-by-side cards you swipe
+    // through (see CSS) instead of the pinned full-screen slide effect —
+    // skip the scroll-driven transform logic entirely there, since setting
+    // inline transforms below would fight the CSS horizontal-scroll layout.
+    if (window.matchMedia("(max-width:700px)").matches) return;
 
     let ticking = false;
     let snapTimer = null;

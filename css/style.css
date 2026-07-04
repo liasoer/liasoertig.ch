@@ -173,6 +173,7 @@ h1,h2,h3,h4{
 .nav-toggle{
   display:none;
   width:40px; height:40px;
+  flex-direction:column;
   align-items:center; justify-content:center;
   border-radius:var(--r-pill);
   border:1px solid var(--edge-b);
@@ -197,7 +198,10 @@ body:has(.hero-pin) main{ padding-top:0; }
 
 @media (max-width:760px){
   .main-nav{
-    position:fixed; inset:78px 0 0 0; background:var(--surface-0);
+    position:fixed; inset:78px 0 0 0;
+    background:rgba(var(--glass-rgb),0.14);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
     flex-direction:column; align-items:flex-start; gap:var(--sp-6);
     padding:var(--sp-8) var(--sp-6);
     transform:translateX(100%);
@@ -350,7 +354,21 @@ body:has(.hero-pin) main{ padding-top:0; }
   --hero-gap:24px;
 }
 @media (max-width:700px){
-  .hero-frame{ inset:26px; border-radius:18px; --hero-gap:12px; }
+  /* Mobile ditches the pinned scroll-slide effect (it's the fullscreen
+     sticky-stage animation used on desktop) for two plain horizontal cards
+     you swipe between — lighter to run and easier to use with a thumb. */
+  body:has(.hero-pin) main{ padding-top:84px; }
+  .hero-pin{ height:auto; }
+  .hero-stage{ position:static; height:auto; overflow:visible; background:none; }
+  .hero-frame{
+    position:static; inset:auto;
+    display:flex; gap:12px;
+    overflow-x:auto; scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+    margin:0 -16px; padding:0 16px 4px;
+    border-radius:0;
+  }
+  .hero-frame::-webkit-scrollbar{ display:none; }
 }
 .hero-slide{
   position:absolute; top:0; bottom:0;
@@ -361,7 +379,16 @@ body:has(.hero-pin) main{ padding-top:0; }
   will-change:transform;
 }
 @media (max-width:700px){
-  .hero-slide{ border-radius:14px; }
+  .hero-slide{
+    position:relative; top:auto; bottom:auto; left:auto; right:auto;
+    border-radius:14px;
+    flex:0 0 82%;
+    height:64vh;
+    scroll-snap-align:center;
+    transform:none;
+    z-index:auto;
+    pointer-events:auto;
+  }
 }
 .hero-slide--projects{
   z-index:2;
@@ -420,6 +447,11 @@ body:has(.hero-pin) main{ padding-top:0; }
   .hero-corner--bl, .hero-corner--br{ bottom:var(--sp-4); }
   .hero-corner--tl, .hero-corner--bl{ left:var(--sp-4); }
   .hero-corner--tr, .hero-corner--br{ right:var(--sp-4); }
+  .hero-credit{
+    position:static;
+    margin-top:var(--sp-4);
+    color:var(--text-2);
+  }
 }
 
 /* ---------- Section ---------- */
@@ -687,17 +719,17 @@ body:has(.hero-pin) main{ padding-top:0; }
 
 /* ---------- Masonry photo wall ---------- */
 .masonry{
-  column-count:1; column-gap:var(--sp-4);
+  column-count:2; column-gap:var(--sp-3);
 }
-@media (min-width:560px){ .masonry{ column-count:2; } }
-@media (min-width:900px){ .masonry{ column-count:3; } }
+@media (min-width:900px){ .masonry{ column-count:3; column-gap:var(--sp-4); } }
 @media (min-width:1300px){ .masonry{ column-count:4; } }
 .masonry button{
-  display:block; width:100%; margin:0 0 var(--sp-4); padding:0;
+  display:block; width:100%; margin:0 0 var(--sp-3); padding:0;
   background:var(--surface-2); border:none; border-radius:var(--r-md);
   overflow:hidden; break-inside:avoid;
   position:relative;
 }
+@media (min-width:900px){ .masonry button{ margin-bottom:var(--sp-4); } }
 .masonry button img{
   width:100%; height:auto; display:block;
   transition:transform 500ms var(--ease-ui), filter var(--dur-fast) var(--ease-ui);
@@ -827,6 +859,13 @@ body.modal-locked{
     scrollbar-width:none;
   }
   .video-grid::-webkit-scrollbar{ display:none; }
+  .video-grid.is-single{
+    justify-content:center;
+    overflow-x:visible;
+  }
+  .video-grid.is-single .video-player{
+    scroll-snap-align:none;
+  }
   .video-player{
     scroll-snap-align:center;
     height:auto;
