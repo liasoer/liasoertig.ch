@@ -477,7 +477,11 @@ body:has(.hero-pin) main{ padding-top:0; }
 .hero-corner--bl{ bottom:var(--sp-6); left:var(--sp-6); }
 .hero-corner--br{ bottom:var(--sp-6); right:var(--sp-6); }
 .hero-slide-caption{
-  position:absolute; z-index:2; left:var(--sp-8); bottom:var(--sp-16);
+  position:absolute; z-index:2; left:var(--sp-8);
+  /* Leaves room below for the scroll-mouse hint (bottom:var(--sp-8), ~58px
+     tall including its label) plus a gap of at least half the mouse
+     icon's own height (18px) above it: 32 + 58 + 18 = 108px. */
+  bottom:108px;
   display:flex; flex-direction:column; gap:2px;
 }
 /* Scroll affordance centered horizontally, sitting at the bottom edge of
