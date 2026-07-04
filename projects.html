@@ -24,7 +24,7 @@
   html{ background:#121110; }
   html[data-theme="light"]{ background:#faf9f6; }
 </style>
-<link rel="stylesheet" href="css/style.css?v=168">
+<link rel="stylesheet" href="css/style.css?v=171">
 </head>
 <body>
 
@@ -74,10 +74,21 @@
 <footer class="site-footer">
   <div class="wrap">
     <div class="footer-top">
-      <div class="footer-links">
-        <a href="mailto:info@liasoertig.ch">info@liasoertig.ch</a>
-        <a href="tel:+41799329526">+41 79 932 95 26</a>
-        <a href="https://instagram.com/liasoertig" target="_blank" rel="noopener">Instagram</a>
+      <div class="footer-col">
+        <p class="footer-col-label">Navigate</p>
+        <div class="footer-links">
+          <a href="projects.html" class="active">Client Projects</a>
+          <a href="photography.html">Editorial</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-label">Get in touch</p>
+        <div class="footer-links">
+          <a href="mailto:info@liasoertig.ch">info@liasoertig.ch</a>
+          <a href="tel:+41799329526">+41 79 932 95 26</a>
+          <a href="https://instagram.com/liasoertig" target="_blank" rel="noopener">Instagram</a>
+        </div>
       </div>
     </div>
     <div class="footer-bottom">
@@ -87,8 +98,8 @@
   </div>
 </footer>
 
-<script src="js/data.js?v=168"></script>
-<script src="js/main.js?v=168"></script>
+<script src="js/data.js?v=171"></script>
+<script src="js/main.js?v=171"></script>
 <script>
   PortfolioSite.renderGrid(document.getElementById("projects-grid"), [...PROJECTS].reverse(), { showCategory: true });
 </script>

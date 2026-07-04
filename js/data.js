@@ -105,7 +105,7 @@ const PROJECTS = [
     instagram: null,
     year: null,
     description: "Showreel for Camille — a compilation of motion work.",
-    cover: "https://img.youtube.com/vi/DgJ82qPwqUA/hqdefault.jpg",
+    cover: "https://img.youtube.com/vi/DgJ82qPwqUA/maxresdefault.jpg",
     images: [],
     videos: [
       { title: "Showreel", youtube: "DgJ82qPwqUA" }

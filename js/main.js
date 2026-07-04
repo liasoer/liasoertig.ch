@@ -161,9 +161,9 @@
         return `
         <article class="card" data-index="${i}" tabindex="0" role="button" aria-label="View ${item.title}">
           <div class="card-media">
-            <img src="${item.cover}" alt="${item.title}" loading="lazy">
+            <img src="${item.cover}" alt="${item.title}" loading="lazy" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault','hqdefault');">
+            <span class="tag card-tag">${tag}</span>
             <div class="card-title-glass">
-              <span class="card-title-glass-tag">${tag}</span>
               <div class="card-title-glass-row">
                 <h3>${heading}</h3>
                 <span class="arrow">${ICON_ARROW}</span>

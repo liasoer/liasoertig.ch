@@ -199,6 +199,10 @@ body:has(.hero-pin) main{ padding-top:0; }
   .site-header{ top:auto; bottom:12px; width:calc(100% - 24px); }
   .site-header .wrap{ height:54px; }
   main{ padding-top:0; padding-bottom:84px; }
+  /* Grid pages already get bottom clearance from the reduced section
+     padding above — the full 84px pill-clearance buffer isn't needed
+     here since the footer immediately follows with its own spacing. */
+  body:has(.grid) main{ padding-bottom:var(--sp-8); }
 }
 
 /* The fullscreen mobile menu is a plain, standalone element — NOT nested
@@ -490,11 +494,16 @@ body:has(.hero-pin) main{ padding-top:0; }
 
 /* ---------- Section ---------- */
 .section{ padding:var(--sp-16) 0; }
+/* Grid pages (Client Projects / Editorial) already hand off to the footer's
+   own generous top padding right after — stacking the section's full
+   bottom padding on top of that just left a dead gap under the last card. */
+.section:has(.grid){ padding-bottom:var(--sp-6); }
 @media (max-width:700px){
   /* The navbar sits at the bottom of the screen on mobile now, so there's
      no floating pill at the top competing for space — the old top padding
      just left a big empty gap above the page title. */
   .section{ padding-top:var(--sp-8); }
+  .section:has(.grid){ padding-bottom:var(--sp-4); }
 }
 .section-head{ margin-bottom:var(--sp-10); }
 .section-head h1{ font-size:clamp(30px,4.5vw,48px); }
@@ -618,6 +627,16 @@ body:has(.hero-pin) main{ padding-top:0; }
 .card-media img{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
 }
+/* Category tag stays as its own floating glass bubble, top-left of the image. */
+.card-tag{
+  position:absolute; top:var(--sp-4); left:var(--sp-4); z-index:2;
+  background:rgba(var(--glass-rgb),0.4);
+  backdrop-filter:blur(10px) saturate(180%);
+  -webkit-backdrop-filter:blur(10px) saturate(180%);
+  border-color:rgba(255,255,255,0.22);
+  color:#fff;
+}
+
 /* Title sits as a liquid-glass panel fused into the bottom sixth of the
    image — full width of the photo, rounded only at the bottom so it reads
    as part of the same rounded-rect as the image itself. */
@@ -625,7 +644,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   position:absolute; left:0; right:0; bottom:0; z-index:2;
   height:16.6667%; min-height:56px;
   display:flex; flex-direction:column; justify-content:center;
-  padding:var(--sp-2) var(--sp-5);
+  padding:0 var(--sp-5);
   border-radius:0 0 var(--r-xl) var(--r-xl);
   background:rgba(var(--glass-rgb),0.14);
   backdrop-filter:blur(14px) saturate(180%);
@@ -638,13 +657,6 @@ body:has(.hero-pin) main{ padding-top:0; }
   transition:background var(--dur-med) var(--ease-ui), transform 350ms var(--ease-ui);
 }
 .card:hover .card-title-glass{ background:rgba(var(--glass-rgb),0.22); }
-.card-title-glass-tag{
-  display:block;
-  font-family:var(--font-display); font-size:10px; font-weight:600;
-  text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.8);
-  margin-bottom:var(--sp-1);
-  text-shadow:0 1px 3px rgba(0,0,0,0.35);
-}
 .card-title-glass-row{
   display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3);
 }
@@ -673,7 +685,13 @@ body:has(.hero-pin) main{ padding-top:0; }
   display:flex; flex-direction:column; gap:var(--sp-8);
 }
 @media (min-width:760px){
-  .footer-top{ flex-direction:row; align-items:flex-end; justify-content:space-between; }
+  .footer-top{ flex-direction:row; align-items:flex-start; justify-content:space-between; gap:var(--sp-16); }
+}
+.footer-col{ display:flex; flex-direction:column; gap:var(--sp-4); }
+.footer-col-label{
+  font-family:var(--font-display); font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.12em; color:var(--text-3, var(--text-2));
+  opacity:0.6;
 }
 .footer-links{ display:flex; flex-direction:column; gap:var(--sp-3); }
 .footer-links a{
@@ -681,7 +699,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   color:var(--text-2);
   transition:color var(--dur-fast) var(--ease-ui);
 }
-.footer-links a:hover{ color:var(--text-1); }
+.footer-links a:hover, .footer-links a.active{ color:var(--text-1); }
 .footer-bottom{
   margin-top:var(--sp-16); padding-top:var(--sp-6); border-top:1px solid var(--edge-a);
   display:flex; flex-wrap:wrap; gap:var(--sp-4); align-items:center; justify-content:space-between;
