@@ -830,37 +830,6 @@
     // inline transforms below would fight the CSS horizontal-scroll layout.
     if (window.matchMedia("(max-width:700px)").matches) return;
 
-    // Scroll-mouse hint: vertically centered on the big display title, and
-    // inset from the right edge by the exact same amount the title is
-    // inset from the left — mirroring its margin rather than sitting at a
-    // fixed spot, so it stays aligned as the title's clamp()-based size
-    // changes across viewport widths. Measured against the actual rendered
-    // boxes (not hardcoded) since both depend on responsive font sizing.
-    // Re-run on resize; safe to read getBoundingClientRect() here even
-    // mid-slide-transition since the transform is applied to .hero-slide
-    // itself, so slide/title/caption all shift together and the relative
-    // math below cancels it out.
-    function positionScrollHints() {
-      document.querySelectorAll(".hero-slide").forEach((slide) => {
-        const hint = slide.querySelector(".hero-scroll-hint");
-        const title = slide.querySelector(".hero-slide-title");
-        const caption = slide.querySelector(".hero-slide-caption");
-        if (!hint || !title || !caption) return;
-        const slideRect = slide.getBoundingClientRect();
-        const titleRect = title.getBoundingClientRect();
-        const captionRect = caption.getBoundingClientRect();
-        const leftInset = captionRect.left - slideRect.left;
-        // The title is set (all caps, no descenders), but its line box still
-        // reserves the font's normal descender space below the baseline —
-        // so the box's true geometric center sits visibly lower than where
-        // the actual letterforms look centered. Biasing up from the exact
-        // 50% mark compensates for that reserved space.
-        const titleCenterY = titleRect.top + titleRect.height * 0.4 - slideRect.top;
-        hint.style.top = titleCenterY + "px";
-        hint.style.right = leftInset + "px";
-      });
-    }
-
     // Scroll-mouse hint in the middle of each card: visible while the page
     // is at rest, hidden the instant the user actually scrolls so it isn't
     // fighting the slide animation, then faded back in once scrolling has
@@ -932,16 +901,9 @@
     window.addEventListener("resize", () => {
       measure();
       update();
-      positionScrollHints();
     });
     measure();
     update();
-    positionScrollHints();
-    // Fonts loading in late can shift the title's rendered box after our
-    // first measurement — re-measure once webfonts are confirmed ready.
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(positionScrollHints).catch(() => {});
-    }
   })();
 
 })();

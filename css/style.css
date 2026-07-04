@@ -477,22 +477,20 @@ body:has(.hero-pin) main{ padding-top:0; }
 .hero-corner--bl{ bottom:var(--sp-6); left:var(--sp-6); }
 .hero-corner--br{ bottom:var(--sp-6); right:var(--sp-6); }
 .hero-slide-caption{
-  position:absolute; z-index:2; left:var(--sp-8); bottom:var(--sp-10);
+  position:absolute; z-index:2; left:var(--sp-8); bottom:var(--sp-16);
   display:flex; flex-direction:column; gap:2px;
 }
-/* Scroll affordance vertically centered on the big display title, inset
-   from the right edge by the same amount the title is inset from the
-   left — top/right are set inline by main.js (positionScrollHints), since
-   they depend on the title's actual rendered box at the current viewport
-   width/clamp() size, not a fixed value. A little scroll-mouse icon
-   (rather than a plain arrow) reads unambiguously as "scroll", not as a
-   clickable next/prev control. Hidden while the user is actively
+/* Scroll affordance centered horizontally, sitting at the bottom edge of
+   the picture — the title was moved further up (see .hero-slide-caption
+   above) specifically to leave this space clear. A little scroll-mouse
+   icon (rather than a plain arrow) reads unambiguously as "scroll", not as
+   a clickable next/prev control. Hidden while the user is actively
    scrolling (see main.js) so it doesn't fight the slide animation, and
-   only shown once the page is at rest again. Desktop-only: mobile
-   doesn't use the scroll-driven slide transition at all. */
+   only shown once the page is at rest again. Desktop-only: mobile doesn't
+   use the scroll-driven slide transition at all. */
 .hero-scroll-hint{
-  position:absolute; z-index:2;
-  transform:translateY(-50%);
+  position:absolute; z-index:2; left:50%; bottom:var(--sp-8);
+  transform:translateX(-50%);
   display:flex; flex-direction:column; align-items:center; gap:var(--sp-2);
   opacity:1; pointer-events:none;
   transition:opacity var(--dur-med) var(--ease-ui);
