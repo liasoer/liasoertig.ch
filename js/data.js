@@ -9,28 +9,42 @@ const CDN = "https://images.squarespace-cdn.com/content/v1/6294b081d7e567047cfd1
 /* ---------------------------------------------------------------------- */
 /* PROJECTS — client / event work                                         */
 /* ---------------------------------------------------------------------- */
+// Rendered order on projects.html is [...PROJECTS].reverse(), so this array
+// is listed bottom-to-top of the desired display order: Kuenstlercantina,
+// Showreel, TO, Look in the Mirror, Bubble Event, Dancing, Lothar Möbel.
 const PROJECTS = [
   {
-    slug: "kuenstlercantina",
-    title: "KUENSTLERCANTINA",
-    subtitle: "NALI",
-    category: "Imagefilm (inkl. Trailer)",
-    instagram: "kuenstlercantina",
-    year: "2024",
-    description: "Concert nights at Künstlercantina — stage light, crowd energy, and the pulse of small venues.",
-    cover: "assets/posters/kuenstlercantina-cover.jpg",
-    accent: ["#5c81df", "#df9f5c", "#df5c9e"],
+    slug: "lothar-moebel",
+    title: "LOTHAR MÖBEL",
+    subtitle: "Doppelstrich",
+    category: "Short Form Video Content",
+    instagram: null,
+    year: "2025",
+    description: "A look inside the Doppelstrich exhibition — craft, wood and process, captured in motion.",
+    cover: "assets/posters/doppelstrich-ausstellung.jpg",
+    accent: ["#df765c", "#dfa15c", "#df5c9e"],
+    images: [],
     videos: [
-      {
-        title: "Imagefilm",
-        youtube: "FuKDkmdblTw"
-      },
-      {
-        title: "Trailer",
-        youtube: "jFUFUN_sSaA"
-      }
-    ],
-    images: []
+      { title: "Video", youtube: "p4yqaqwlI8E", portrait: true }
+    ]
+  },
+  {
+    slug: "dancing",
+    title: "DANCING",
+    subtitle: "Camille & Sophie",
+    category: "Short Form Video Content",
+    instagram: "camillesjournal",
+    year: "2024",
+    description: "Double portrait with Camille and Sophie, in motion — the video reels from the same session.",
+    cover: "assets/posters/camillesophie-videos-cover.jpg",
+    accent: ["#df7d5c", "#dfba5c", "#5c88df"],
+    images: [],
+    videosCarousel: true,
+    videos: [
+      { title: "Reel 1", youtube: "0s_XTEDXass", portrait: true },
+      { title: "Reel 2", youtube: "S1jCECFDiBU", portrait: true },
+      { title: "Reel 3", youtube: "JDGXIhkcFlY", portrait: true }
+    ]
   },
   {
     slug: "bubble-event",
@@ -54,32 +68,18 @@ const PROJECTS = [
     ]
   },
   {
-    slug: "camille-showreel",
-    title: "SHOWREEL",
-    subtitle: "Camille",
-    category: "Showreel",
-    instagram: null,
-    year: null,
-    description: "Showreel for Camille — a compilation of motion work.",
-    cover: "https://img.youtube.com/vi/DgJ82qPwqUA/hqdefault.jpg",
-    images: [],
-    videos: [
-      { title: "Showreel", youtube: "DgJ82qPwqUA" }
-    ]
-  },
-  {
-    slug: "lothar-moebel",
-    title: "LOTHAR MÖBEL",
-    subtitle: "Doppelstrich",
-    category: "Short Form Video Content",
+    slug: "look-in-the-mirror",
+    title: "LOOK IN THE MIRROR",
+    subtitle: "Minyar",
+    category: "Music Video",
     instagram: null,
     year: "2025",
-    description: "A look inside the Doppelstrich exhibition — craft, wood and process, captured in motion.",
-    cover: "assets/posters/doppelstrich-ausstellung.jpg",
-    accent: ["#df765c", "#dfa15c", "#df5c9e"],
+    description: "Music video \"Look in the Mirror\" — staged visual language, camera and edit.",
+    cover: "assets/posters/look-in-the-mirror.jpg",
+    accent: ["#dfbf5c", "#df925c", "#5cdf5c"],
     images: [],
     videos: [
-      { title: "Video", youtube: "p4yqaqwlI8E", portrait: true }
+      { title: "Music Video", youtube: "uWKFiTOV2_w" }
     ]
   },
   {
@@ -98,37 +98,40 @@ const PROJECTS = [
     ]
   },
   {
-    slug: "look-in-the-mirror",
-    title: "LOOK IN THE MIRROR",
-    subtitle: "Minyar",
-    category: "Music Video",
+    slug: "camille-showreel",
+    title: "SHOWREEL",
+    subtitle: "Camille",
+    category: "Showreel",
     instagram: null,
-    year: "2025",
-    description: "Music video \"Look in the Mirror\" — staged visual language, camera and edit.",
-    cover: "assets/posters/look-in-the-mirror.jpg",
-    accent: ["#dfbf5c", "#df925c", "#5cdf5c"],
+    year: null,
+    description: "Showreel for Camille — a compilation of motion work.",
+    cover: "https://img.youtube.com/vi/DgJ82qPwqUA/hqdefault.jpg",
     images: [],
     videos: [
-      { title: "Music Video", youtube: "uWKFiTOV2_w" }
+      { title: "Showreel", youtube: "DgJ82qPwqUA" }
     ]
   },
   {
-    slug: "dancing",
-    title: "DANCING",
-    subtitle: "Camille & Sophie",
-    category: "Short Form Video Content",
-    instagram: "camillesjournal",
+    slug: "kuenstlercantina",
+    title: "KUENSTLERCANTINA",
+    subtitle: "NALI",
+    category: "Imagefilm (inkl. Trailer)",
+    instagram: "kuenstlercantina",
     year: "2024",
-    description: "Double portrait with Camille and Sophie, in motion — the video reels from the same session.",
-    cover: "assets/posters/camillesophie-videos-cover.jpg",
-    accent: ["#df7d5c", "#dfba5c", "#5c88df"],
-    images: [],
-    videosCarousel: true,
+    description: "Concert nights at Künstlercantina — stage light, crowd energy, and the pulse of small venues.",
+    cover: "assets/posters/kuenstlercantina-cover.jpg",
+    accent: ["#5c81df", "#df9f5c", "#df5c9e"],
     videos: [
-      { title: "Reel 1", youtube: "0s_XTEDXass", portrait: true },
-      { title: "Reel 2", youtube: "S1jCECFDiBU", portrait: true },
-      { title: "Reel 3", youtube: "JDGXIhkcFlY", portrait: true }
-    ]
+      {
+        title: "Imagefilm",
+        youtube: "FuKDkmdblTw"
+      },
+      {
+        title: "Trailer",
+        youtube: "jFUFUN_sSaA"
+      }
+    ],
+    images: []
   },
 ];
 
@@ -159,28 +162,6 @@ const PHOTOGRAPHY = [
     ]
   },
   {
-    slug: "emma-iii",
-    title: "Emma",
-    instagram: "emma_climent",
-    year: "2024",
-    description: "Third session with Emma — studio light and still poses, reduced to expression and texture.",
-    cover: CDN + "c17dbf3a-350a-4298-8895-6f2537184566/LO-01698.jpg",
-    images: [
-      CDN + "c17dbf3a-350a-4298-8895-6f2537184566/LO-01698.jpg",
-      CDN + "721a0526-a73b-4da7-85c3-e03fca96ee78/LO-01898.jpg",
-      CDN + "2ff0a138-aaf8-44c7-beee-f6074e12fff6/LO-01954.jpg",
-      CDN + "e8afc5d1-23aa-4ce0-bf6e-cee8889bf5ca/LO-01841.jpg",
-      CDN + "409d819b-28c6-4787-a49b-c5f6d9a25614/LO-01547.jpg",
-      CDN + "4e9671a5-8bfa-4a8b-92d9-e5196eb42449/LO-01888.jpg",
-      CDN + "66ba9154-fba1-4896-abb5-32f89bf95d54/LO-01772.jpg",
-      CDN + "ccc63265-e48d-4db0-86ea-a2f22795ee18/LO-01931.jpg",
-      CDN + "5527e6aa-95c2-42cb-8dbe-7ab3514e4c35/LO-01776.jpg",
-      CDN + "158b2331-f6c1-4413-9648-dba375498e37/LO-01661.jpg",
-      CDN + "01ad9d79-9037-45e1-95e0-7e3af2b50511/LO-01936.jpg",
-      CDN + "c63c5465-772b-4974-9151-3e23ff856fae/LO-01961.jpg",
-    ]
-  },
-  {
     slug: "sophie-i",
     title: "Sophie",
     instagram: "sophie.loreti",
@@ -200,6 +181,28 @@ const PHOTOGRAPHY = [
       CDN + "dcef4c3e-e236-4dc1-acfa-d3b914b37034/LO-001096.jpg",
       CDN + "4bff901e-f671-43cf-b319-8dbd9373a806/LO-000572.jpg",
       CDN + "b3036774-18b6-4f27-bca9-e645c5b7c10d/LO-001025.jpg",
+    ]
+  },
+  {
+    slug: "emma-iii",
+    title: "Emma",
+    instagram: "emma_climent",
+    year: "2024",
+    description: "Third session with Emma — studio light and still poses, reduced to expression and texture.",
+    cover: CDN + "c17dbf3a-350a-4298-8895-6f2537184566/LO-01698.jpg",
+    images: [
+      CDN + "c17dbf3a-350a-4298-8895-6f2537184566/LO-01698.jpg",
+      CDN + "721a0526-a73b-4da7-85c3-e03fca96ee78/LO-01898.jpg",
+      CDN + "2ff0a138-aaf8-44c7-beee-f6074e12fff6/LO-01954.jpg",
+      CDN + "e8afc5d1-23aa-4ce0-bf6e-cee8889bf5ca/LO-01841.jpg",
+      CDN + "409d819b-28c6-4787-a49b-c5f6d9a25614/LO-01547.jpg",
+      CDN + "4e9671a5-8bfa-4a8b-92d9-e5196eb42449/LO-01888.jpg",
+      CDN + "66ba9154-fba1-4896-abb5-32f89bf95d54/LO-01772.jpg",
+      CDN + "ccc63265-e48d-4db0-86ea-a2f22795ee18/LO-01931.jpg",
+      CDN + "5527e6aa-95c2-42cb-8dbe-7ab3514e4c35/LO-01776.jpg",
+      CDN + "158b2331-f6c1-4413-9648-dba375498e37/LO-01661.jpg",
+      CDN + "01ad9d79-9037-45e1-95e0-7e3af2b50511/LO-01936.jpg",
+      CDN + "c63c5465-772b-4974-9151-3e23ff856fae/LO-01961.jpg",
     ]
   },
   {

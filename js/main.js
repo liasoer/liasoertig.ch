@@ -161,14 +161,14 @@
         return `
         <article class="card" data-index="${i}" tabindex="0" role="button" aria-label="View ${item.title}">
           <div class="card-media">
-            <span class="tag">${tag}</span>
             <img src="${item.cover}" alt="${item.title}" loading="lazy">
-          </div>
-          <div class="card-body">
-            <div class="card-heading">
-              <h3>${heading}</h3>
+            <div class="card-title-glass">
+              <span class="card-title-glass-tag">${tag}</span>
+              <div class="card-title-glass-row">
+                <h3>${heading}</h3>
+                <span class="arrow">${ICON_ARROW}</span>
+              </div>
             </div>
-            <span class="arrow">${ICON_ARROW}</span>
           </div>
         </article>`;
       })

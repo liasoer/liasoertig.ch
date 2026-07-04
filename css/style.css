@@ -618,46 +618,48 @@ body:has(.hero-pin) main{ padding-top:0; }
 .card-media img{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
 }
-.card-media .tag{
-  position:absolute; top:var(--sp-4); left:var(--sp-4); z-index:2;
-  background:rgba(var(--glass-rgb),0.75); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-}
-.card-media .play-badge{
-  position:absolute; top:var(--sp-4); right:var(--sp-4); z-index:2;
-  width:40px; height:40px; border-radius:var(--r-pill);
-  background:rgba(18,17,16,0.55); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-  display:flex; align-items:center; justify-content:center;
-}
-.card-media .play-badge svg{ width:15px; height:15px; fill:#fff; stroke:none; margin-left:2px; }
-
-.card-body{
-  padding:var(--sp-5) var(--sp-5);
-  display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3);
-  background:rgba(var(--glass-rgb),0.14);
-  backdrop-filter:blur(24px) saturate(180%);
-  -webkit-backdrop-filter:blur(24px) saturate(180%);
+/* Title now lives as a floating liquid-glass panel near the top of the
+   image itself, instead of a solid bar below it — the 4:3 photo stays
+   full-bleed and the label reads directly over it. */
+.card-title-glass{
+  position:absolute; top:var(--sp-4); left:var(--sp-4); right:var(--sp-4); z-index:2;
+  padding:var(--sp-3) var(--sp-4);
+  border-radius:var(--r-lg);
+  background:rgba(var(--glass-rgb),0.32);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.22);
   box-shadow:
-    inset 0 1px 1px rgba(255,255,255,0.35),
-    inset 0 -1px 6px rgba(0,0,0,0.08);
-  border-top:1px solid var(--edge-b);
+    inset 0 1px 1px rgba(255,255,255,0.4),
+    inset 0 -1px 8px rgba(0,0,0,0.12),
+    0 10px 26px rgba(0,0,0,0.22);
+  transition:background var(--dur-med) var(--ease-ui), transform 350ms var(--ease-ui);
 }
-.card-body .card-heading{ min-width:0; }
-.card-body h3{
-  font-size:17px; line-height:1.3; letter-spacing:0.01em;
+.card:hover .card-title-glass{ background:rgba(var(--glass-rgb),0.42); }
+.card-title-glass-tag{
+  display:block;
+  font-family:var(--font-display); font-size:10px; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.8);
+  margin-bottom:var(--sp-1);
+  text-shadow:0 1px 3px rgba(0,0,0,0.35);
 }
-.card-body .card-sub{
-  margin:var(--sp-1) 0 0; color:var(--text-2); font-size:12px;
-  font-family:var(--font-display); text-transform:uppercase; letter-spacing:0.06em;
+.card-title-glass-row{
+  display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3);
 }
-.card-body .arrow{
-  width:34px; height:34px; border-radius:var(--r-pill); border:1px solid var(--edge-b);
+.card-title-glass h3{
+  font-size:15px; line-height:1.28; letter-spacing:0.01em; color:#fff;
+  text-shadow:0 1px 4px rgba(0,0,0,0.4);
+  min-width:0;
+}
+.arrow{
+  width:32px; height:32px; border-radius:var(--r-pill); border:1px solid rgba(255,255,255,0.3);
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  background:rgba(0,0,0,0.15);
   opacity:0; transform:translateX(-4px);
   transition:opacity var(--dur-fast) var(--ease-ui), transform var(--dur-fast) var(--ease-ui), background var(--dur-fast) var(--ease-ui), border-color var(--dur-fast) var(--ease-ui);
 }
+.arrow svg{ width:14px; height:14px; stroke:#fff; transition:stroke var(--dur-fast) var(--ease-ui); }
 .card:hover .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
-.card:hover .arrow svg{ stroke:#fff; }
-.card-body .arrow svg{ width:14px; height:14px; stroke:var(--text-1); transition:stroke var(--dur-fast) var(--ease-ui); }
 
 /* ---------- Footer (always an inverse dark block, both themes) ---------- */
 .site-footer{
@@ -877,6 +879,11 @@ body.modal-locked{
 .video-player{
   position:relative; border-radius:var(--r-md); overflow:hidden;
   background:var(--ink-900);
+  /* A visible edge so adjacent cards read as separate clips instead of
+     blending into one another — especially in the mobile carousel, where
+     both the gap and the video's own black corners can be the same near-
+     black tone as the dark popup background. */
+  border:1px solid var(--edge-b);
   aspect-ratio:16/9; /* fallback until the real ratio is known */
   /* The box's only in-flow "content" is absolutely-positioned children (the
      video itself, controls, play button), so it has no intrinsic size to
@@ -927,6 +934,7 @@ body.modal-locked{
     overflow-x:auto;
     scroll-snap-type:x mandatory;
     justify-content:flex-start;
+    gap:var(--sp-5);
     margin:0 calc(var(--sp-5) * -1);
     padding:0 var(--sp-5) var(--sp-2);
     -webkit-overflow-scrolling:touch;
