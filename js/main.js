@@ -601,12 +601,24 @@
     let ticking = false;
     let snapTimer = null;
 
+    // pin/stage height and stage width only change on resize (or content
+    // reflow), not on every scroll pixel — reading them inside the scroll
+    // handler forced a synchronous layout on every single frame, which is
+    // the main cause of mobile scroll jank here. Cache them once and only
+    // refresh on resize; the scroll handler then only reads the one value
+    // that's genuinely scroll-dependent (the pin's position).
+    let range = 0;
+    let step = 0;
+    function measure() {
+      range = pin.offsetHeight - stage.offsetHeight;
+      step = stage.offsetWidth;
+    }
+
     // Once scrolling settles, snap to whichever slide is closer — you can
     // never rest half-transitioned between Projects and Photography.
     function scheduleSnap() {
       if (snapTimer) clearTimeout(snapTimer);
       snapTimer = setTimeout(() => {
-        const range = pin.offsetHeight - stage.offsetHeight;
         if (range <= 0) return;
         const p = Math.min(Math.max(-pin.getBoundingClientRect().top / range, 0), 1);
         const target = Math.round(p);
@@ -617,14 +629,8 @@
     }
 
     function update() {
-      const range = pin.offsetHeight - stage.offsetHeight;
       const scrolled = -pin.getBoundingClientRect().top;
       const p = range > 0 ? Math.min(Math.max(scrolled / range, 0), 1) : 0;
-
-      // Use the stage's actual pixel width (not the slide's own, gap-shrunk
-      // width) so the two tiles slide the exact distance that keeps the
-      // gap between them visible and consistent the whole way through.
-      const step = stage.offsetWidth;
 
       from.style.transform = `translateX(${-p * step}px)`;
       from.style.pointerEvents = p < 0.5 ? "auto" : "none";
@@ -642,7 +648,11 @@
       }
       scheduleSnap();
     }, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener("resize", () => {
+      measure();
+      update();
+    });
+    measure();
     update();
   })();
 

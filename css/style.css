@@ -523,17 +523,15 @@ body:has(.hero-pin) main{ padding-top:0; }
   overflow:hidden;
   cursor:pointer;
   -webkit-mask-image:-webkit-radial-gradient(white, black);
-  filter:grayscale(0);
-  transition:box-shadow 450ms var(--ease-ui), border-color var(--dur-med) var(--ease-ui), filter 400ms var(--ease-ui);
+  transform:scale(1);
+  transition:box-shadow 450ms var(--ease-ui), border-color var(--dur-med) var(--ease-ui), transform 350ms var(--ease-ui);
 }
 .card:hover{
   box-shadow:var(--shadow-lg);
   border-color:var(--edge-b);
+  transform:scale(1.03);
   z-index:2;
 }
-/* Spotlight effect: hovering one card desaturates every other card in the grid. */
-.grid:hover .card{ filter:grayscale(1); }
-.grid:hover .card:hover{ filter:grayscale(0); }
 .card-media{
   position:relative; aspect-ratio:4/3; overflow:hidden; background:var(--surface-2);
 }
@@ -616,7 +614,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   -webkit-backdrop-filter:blur(18px) saturate(140%);
   display:flex; align-items:center; justify-content:center;
   opacity:0; pointer-events:none;
-  transition:opacity var(--dur-med) var(--ease-ui);
+  transition:opacity 380ms var(--ease-ui);
   padding:var(--sp-6);
 }
 .modal-overlay.is-open{ opacity:1; pointer-events:auto; }
@@ -634,10 +632,11 @@ body:has(.hero-pin) main{ padding-top:0; }
     inset 0 1px 1px rgba(255,255,255,0.3),
     inset 0 -1px 6px rgba(0,0,0,0.08);
   border:1px solid var(--edge-a);
-  transform:translateY(20px) scale(0.97);
-  transition:transform var(--dur-med) var(--ease-in);
+  opacity:0;
+  transform:translateY(28px) scale(0.94);
+  transition:transform 420ms var(--ease-in), opacity 380ms var(--ease-ui);
 }
-.modal-overlay.is-open .modal{ transform:translateY(0) scale(1); }
+.modal-overlay.is-open .modal{ opacity:1; transform:translateY(0) scale(1); }
 
 .modal-header{
   display:flex; align-items:flex-start; justify-content:space-between;
