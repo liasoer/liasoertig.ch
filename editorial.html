@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Client Projects — Lias Oertig</title>
-<meta name="description" content="Client work by Lias Oertig: events, weddings and brand projects.">
-<link rel="canonical" href="https://liasoertig.ch/projects.html">
+<title>Editorial — Lias Oertig</title>
+<meta name="description" content="Editorial portrait photography by Lias Oertig — personal series shot in natural light.">
+<link rel="canonical" href="https://liasoertig.ch/editorial.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Client Projects — Lias Oertig">
-<meta property="og:description" content="Client work by Lias Oertig: events, weddings and brand projects.">
-<meta property="og:url" content="https://liasoertig.ch/projects.html">
+<meta property="og:title" content="Editorial — Lias Oertig">
+<meta property="og:description" content="Editorial portrait photography by Lias Oertig — personal series shot in natural light.">
+<meta property="og:url" content="https://liasoertig.ch/editorial.html">
 <meta property="og:image" content="https://liasoertig.ch/assets/posters/kuenstlercantina-trailer-hero-poster.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Client Projects — Lias Oertig">
-<meta name="twitter:description" content="Client work by Lias Oertig: events, weddings and brand projects.">
+<meta name="twitter:title" content="Editorial — Lias Oertig">
+<meta name="twitter:description" content="Editorial portrait photography by Lias Oertig — personal series shot in natural light.">
 <meta name="twitter:image" content="https://liasoertig.ch/assets/posters/kuenstlercantina-trailer-hero-poster.jpg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16.png">
@@ -38,7 +38,7 @@
   html{ background:#121110; }
   html[data-theme="light"]{ background:#faf9f6; }
 </style>
-<link rel="stylesheet" href="css/style.css?v=207">
+<link rel="stylesheet" href="css/style.css?v=208">
 </head>
 <body>
 
@@ -49,8 +49,8 @@
       <span class="brand-name">Lias Oertig</span>
     </a>
     <nav class="main-nav">
-      <a href="projects.html" class="active">Client Projects</a>
-      <a href="photography.html">Editorial</a>
+      <a href="client-projects.html">Client Projects</a>
+      <a href="editorial.html" class="active">Editorial</a>
       <a href="contact.html">Contact</a>
     </nav>
     <div class="header-actions">
@@ -68,8 +68,8 @@
 </header>
 
 <div class="mobile-nav" id="mobileNav">
-  <a href="projects.html" class="active">Client Projects</a>
-  <a href="photography.html">Editorial</a>
+  <a href="client-projects.html">Client Projects</a>
+  <a href="editorial.html" class="active">Editorial</a>
   <a href="contact.html">Contact</a>
 </div>
 
@@ -77,10 +77,10 @@
   <section class="section">
     <div class="wrap">
       <div class="section-head">
-        <p class="eyebrow">Videography</p>
-        <h1>Client Projects</h1>
+        <p class="eyebrow">Photography &amp; Videography</p>
+        <h1>Editorial</h1>
       </div>
-      <div class="grid" id="projects-grid"></div>
+      <div class="grid" id="photography-grid"></div>
     </div>
   </section>
 </main>
@@ -91,8 +91,8 @@
       <div class="footer-col">
         <p class="footer-col-label">Navigate</p>
         <div class="footer-links">
-          <a href="projects.html" class="active">Client Projects</a>
-          <a href="photography.html">Editorial</a>
+          <a href="client-projects.html">Client Projects</a>
+          <a href="editorial.html" class="active">Editorial</a>
           <a href="contact.html">Contact</a>
         </div>
       </div>
@@ -108,10 +108,10 @@
   </div>
 </footer>
 
-<script src="js/data.js?v=207"></script>
-<script src="js/main.js?v=207"></script>
+<script src="js/data.js?v=208"></script>
+<script src="js/main.js?v=208"></script>
 <script>
-  PortfolioSite.renderGrid(document.getElementById("projects-grid"), [...PROJECTS].reverse(), { showCategory: true });
+  PortfolioSite.renderGrid(document.getElementById("photography-grid"), PHOTOGRAPHY, { tagLabel: "Portrait", showCategory: true });
 </script>
 </body>
 </html>
