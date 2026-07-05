@@ -549,7 +549,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   line-height:0.92; letter-spacing:-0.01em;
 }
 @media (max-width:700px){
-  .hero-slide-caption{ left:var(--sp-5); bottom:var(--sp-8); }
+  .hero-slide-caption{ left:var(--sp-5); bottom:var(--sp-4); }
   /* The "+" corner marks were a desktop-only decorative touch — on the
      smaller mobile cards they just added clutter, so hide them entirely. */
   .hero-corner{ display:none; }
