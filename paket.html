@@ -48,12 +48,25 @@
     width:100%; display:block; margin-bottom:var(--sp-4);
     border-radius:var(--r-md); box-shadow:var(--shadow-sm);
   }
-  /* Shorts carousel sized so all 3 portrait clips fit within the page
-     width without needing the horizontal scroll the same class enables
-     elsewhere (inside the fixed-height modal, where scrolling is the
-     point) — this is a plain in-flow page section, so no scroll here. */
-  .paket-shorts .video-player.is-portrait{
-    height:min(46vh, 420px);
+  /* Shorts row: on desktop, skip the horizontal-scroll carousel pattern
+     (that's intentional elsewhere, inside the fixed-height modal) and
+     instead let the 3 clips share one row that fills the section's full
+     width, sized by width rather than by height so nothing overflows.
+     On mobile, leave the site-wide swipe-carousel sizing untouched. */
+  @media (min-width:701px){
+    .paket-shorts.video-grid.is-carousel{
+      flex-wrap:nowrap;
+      overflow-x:visible;
+    }
+    .paket-shorts .video-item{
+      flex:1 1 0;
+      max-width:none;
+    }
+    .paket-shorts .video-player.is-portrait{
+      height:auto;
+      width:100%;
+      max-width:100%;
+    }
   }
 </style>
 </head>
