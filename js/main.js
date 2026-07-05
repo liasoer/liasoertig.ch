@@ -182,7 +182,7 @@
         return `
         <article class="card" data-index="${i}" tabindex="0" role="button" aria-label="View ${item.title}">
           <div class="card-media">
-            <img src="${cacheBust(item.cover)}" alt="${item.title}" loading="lazy" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault','hqdefault');">
+            <img src="${cacheBust(item.cover)}" alt="${heading}" loading="lazy" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault','hqdefault');">
             <span class="tag card-tag">${tag}</span>
             <div class="card-title-glass">
               <div class="card-title-glass-row">
