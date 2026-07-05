@@ -32,12 +32,12 @@
 </style>
 <link rel="stylesheet" href="css/style.css?v=208">
 <style>
-  .paket-lead{ max-width:640px; }
-  .paket-list{ list-style:none; margin:var(--sp-6) 0; padding:0; display:flex; flex-direction:column; gap:var(--sp-3); max-width:640px; }
+  .paket-lead{ max-width:none; }
+  .paket-list{ list-style:none; margin:var(--sp-6) 0; padding:0; display:flex; flex-direction:column; gap:var(--sp-3); max-width:none; }
   .paket-list li{ padding-left:var(--sp-5); position:relative; color:var(--text-2); line-height:1.55; }
   .paket-list li::before{ content:"—"; position:absolute; left:0; color:var(--text-1); }
   .paket-list strong{ color:var(--text-1); }
-  .paket-copy{ max-width:640px; color:var(--text-2); line-height:1.7; margin:var(--sp-4) 0; }
+  .paket-copy{ max-width:none; color:var(--text-2); line-height:1.7; margin:var(--sp-4) 0; }
   .paket-section-title{ margin:var(--sp-16) 0 var(--sp-6); }
   .paket-photo-grid{
     column-count:1; column-gap:var(--sp-4);
@@ -47,6 +47,13 @@
   .paket-photo-grid img{
     width:100%; display:block; margin-bottom:var(--sp-4);
     border-radius:var(--r-md); box-shadow:var(--shadow-sm);
+  }
+  /* Shorts carousel sized so all 3 portrait clips fit within the page
+     width without needing the horizontal scroll the same class enables
+     elsewhere (inside the fixed-height modal, where scrolling is the
+     point) — this is a plain in-flow page section, so no scroll here. */
+  .paket-shorts .video-player.is-portrait{
+    height:min(46vh, 420px);
   }
 </style>
 </head>
@@ -107,7 +114,8 @@
         <div class="video-item">
           <div class="video-player is-embed">
             <iframe
-              src="https://www.youtube.com/embed/6s4d2hCbOB4?modestbranding=1&rel=0&iv_load_policy=3"
+              id="paket-yt-1"
+              src="https://www.youtube.com/embed/6s4d2hCbOB4?modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1"
               title="Imagefilm"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -121,7 +129,8 @@
         <div class="video-item">
           <div class="video-player is-embed">
             <iframe
-              src="https://www.youtube.com/embed/jNn2TTwVeKw?modestbranding=1&rel=0&iv_load_policy=3"
+              id="paket-yt-2"
+              src="https://www.youtube.com/embed/jNn2TTwVeKw?modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1"
               title="Trailer"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -131,11 +140,12 @@
       </div>
 
       <h2 class="paket-section-title">Tiktok / Reel / Short</h2>
-      <div class="video-grid is-carousel">
+      <div class="video-grid is-carousel paket-shorts">
         <div class="video-item">
           <div class="video-player is-embed is-portrait">
             <iframe
-              src="https://www.youtube.com/embed/Cj76jSYAK3w?modestbranding=1&rel=0&iv_load_policy=3"
+              id="paket-yt-3"
+              src="https://www.youtube.com/embed/Cj76jSYAK3w?modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1"
               title="Short 1"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -145,7 +155,8 @@
         <div class="video-item">
           <div class="video-player is-embed is-portrait">
             <iframe
-              src="https://www.youtube.com/embed/n2IM4hdluWk?modestbranding=1&rel=0&iv_load_policy=3"
+              id="paket-yt-4"
+              src="https://www.youtube.com/embed/n2IM4hdluWk?modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1"
               title="Short 2"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -155,7 +166,8 @@
         <div class="video-item">
           <div class="video-player is-embed is-portrait">
             <iframe
-              src="https://www.youtube.com/embed/0wNqssDT_o8?modestbranding=1&rel=0&iv_load_policy=3"
+              id="paket-yt-5"
+              src="https://www.youtube.com/embed/0wNqssDT_o8?modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1"
               title="Short 3"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -207,5 +219,40 @@
 </footer>
 
 <script src="js/main.js?v=208"></script>
+<script>
+  // Only one of the 5 clips on this page should ever be making noise at a
+  // time — starting any one pauses every other one, same behaviour as the
+  // project popups elsewhere on the site.
+  (function () {
+    var ids = ["paket-yt-1", "paket-yt-2", "paket-yt-3", "paket-yt-4", "paket-yt-5"];
+    var players = [];
+
+    function stopAllExcept(active) {
+      players.forEach(function (p) {
+        if (p !== active) { try { p.pauseVideo(); } catch (e) {} }
+      });
+    }
+
+    window.onYouTubeIframeAPIReady = function () {
+      ids.forEach(function (id) {
+        if (!document.getElementById(id)) return;
+        try {
+          var player = new YT.Player(id, {
+            events: {
+              onStateChange: function (e) {
+                if (e.data === YT.PlayerState.PLAYING) stopAllExcept(player);
+              }
+            }
+          });
+          players.push(player);
+        } catch (e) {}
+      });
+    };
+
+    var s = document.createElement("script");
+    s.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(s);
+  })();
+</script>
 </body>
 </html>
