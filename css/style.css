@@ -550,13 +550,9 @@ body:has(.hero-pin) main{ padding-top:0; }
 }
 @media (max-width:700px){
   .hero-slide-caption{ left:var(--sp-5); bottom:var(--sp-8); }
-  .hero-corner{ width:20px; height:20px; font-size:16px; }
-  .hero-corner--tl, .hero-corner--tr{ top:var(--sp-4); }
-  .hero-corner--bl, .hero-corner--br{ bottom:var(--sp-4); }
-  /* Line the left corners up with the caption's left edge so the "+" sits
-     flush above/below the "C"/"E" the title starts with, matching desktop. */
-  .hero-corner--tl, .hero-corner--bl{ left:var(--sp-5); }
-  .hero-corner--tr, .hero-corner--br{ right:var(--sp-5); }
+  /* The "+" corner marks were a desktop-only decorative touch — on the
+     smaller mobile cards they just added clutter, so hide them entirely. */
+  .hero-corner{ display:none; }
 }
 
 /* ---------- Section ---------- */
@@ -678,8 +674,16 @@ body:has(.hero-pin) main{ padding-top:0; }
   box-shadow:var(--shadow-sm);
   overflow:hidden;
   cursor:pointer;
-  -webkit-mask-image:-webkit-radial-gradient(white, black);
   transform:scale(1);
+  /* iOS Safari flickers backdrop-filter descendants (the liquid-glass
+     title panel) while this element is both scaling and scrolling —
+     forcing it onto its own stable compositing layer stops the repaint
+     flash. The old -webkit-mask-image radial-gradient hack used to live
+     here for corner-clipping, but .card-media now clips its own corners
+     directly (see below), so the mask was both redundant and very likely
+     the actual source of the flicker — mask-image is a known trigger for
+     this exact iOS repaint bug when combined with a transform. */
+  -webkit-backface-visibility:hidden; backface-visibility:hidden;
   transition:box-shadow 450ms var(--ease-ui), border-color var(--dur-med) var(--ease-ui), transform 350ms var(--ease-ui);
 }
 /* Real hover only — on touch devices tapping a card would otherwise also

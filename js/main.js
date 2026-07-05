@@ -236,10 +236,21 @@
           ratios.forEach((ratio, card) => {
             if (ratio > bestRatio) { bestRatio = ratio; best = card; }
           });
-          if (best !== active) {
+          // Small hysteresis margin: two adjacent cards can hover right
+          // around the same ratio for several scroll ticks as one crosses
+          // the other, which was flipping .is-inview on and off rapidly
+          // and — combined with the backdrop-filter glass panel — showing
+          // up as a visible flicker. Requiring a clear (not just any)
+          // improvement over the current ratio before switching keeps the
+          // highlight stable through that crossover.
+          const activeRatio = active ? ratios.get(active) || 0 : 0;
+          if (best !== active && best && bestRatio > activeRatio + 0.05) {
             if (active) active.classList.remove("is-inview");
-            if (best) best.classList.add("is-inview");
+            best.classList.add("is-inview");
             active = best;
+          } else if (!best && active) {
+            active.classList.remove("is-inview");
+            active = null;
           }
         },
         { threshold: Array.from({ length: 21 }, (_, i) => i / 20) }
