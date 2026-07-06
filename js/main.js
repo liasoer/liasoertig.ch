@@ -75,11 +75,16 @@
   // scroll offset, then restoring `window.scrollTo` on unlock, keeps the
   // visitor exactly where they were.
   let savedScrollY = 0;
+  // Set by initSmoothScroll() below, if this page has it active — kept in
+  // outer scope so lockScroll/unlockScroll can pause/resume it while a
+  // modal is open, instead of it fighting the modal's own scroll handling.
+  let smoothScroll = null;
   function lockScroll() {
     savedScrollY = window.scrollY || window.pageYOffset || 0;
     document.body.style.top = `-${savedScrollY}px`;
     document.documentElement.classList.add("modal-locked");
     document.body.classList.add("modal-locked");
+    if (smoothScroll) smoothScroll.stop();
   }
   // Belt-and-suspenders: the fixed-body trick above stops the page's own
   // scroll, but wheel/touch input can still bubble through and nudge the
@@ -128,7 +133,44 @@
     document.documentElement.style.scrollBehavior = "auto";
     window.scrollTo(0, savedScrollY);
     document.documentElement.style.scrollBehavior = prevBehavior;
+    if (smoothScroll) smoothScroll.start();
   }
+
+  /* ---------- Smooth / inertia scroll (desktop, non-hero pages) ----------
+     Modeled on the eased, momentum-driven scroll feel of reference sites
+     like offcam.ch, via Lenis — a small library that moves the real
+     document scroll position with requestAnimationFrame + easing instead of
+     jumping straight to each wheel/trackpad tick. Because it scrolls the
+     real documentElement (not a transformed virtual layer), window.scrollY,
+     getBoundingClientRect() and IntersectionObserver all keep working
+     normally for every other script on the page — this only changes how
+     scrolling *feels*, not how position is read.
+     Skipped entirely on the homepage: .hero-pin there already drives its
+     own scroll-linked slide transform (see initHeroSlides below), and a
+     second smoother fighting over the same scroll position would make that
+     math unreliable. Also skipped on small screens (mobile already has its
+     own native momentum scrolling) and for prefers-reduced-motion. */
+  (function initSmoothScroll() {
+    if (document.querySelector(".hero-pin")) return;
+    if (window.matchMedia("(max-width:700px)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/lenis@1.3.23/dist/lenis.min.js";
+    script.onload = function () {
+      if (!window.Lenis) return;
+      smoothScroll = new window.Lenis({
+        duration: 1.15,
+        easing: (t) => 1 - Math.pow(1 - t, 3),
+      });
+      function raf(time) {
+        smoothScroll.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+    };
+    document.head.appendChild(script);
+  })();
 
   /* ---------- Edge glass (frosted vignette while scrolling) ---------- */
   if (!document.querySelector(".edge-glass-bottom")) {
