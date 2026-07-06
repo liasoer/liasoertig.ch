@@ -99,6 +99,28 @@
     e.preventDefault();
   }, { passive: false });
 
+  /* ---------- Mouse-wheel scroll redirect for horizontal video carousels --
+     Once the cursor is over a .video-grid (the horizontal multi-video
+     carousel), some browsers "helpfully" route a plain vertical mouse-wheel
+     tick into scrolling that carousel sideways instead of letting it bubble
+     up — since the carousel can scroll horizontally, the browser treats it
+     as the target, and the popup itself simply stops responding to the
+     wheel while the cursor sits over the videos. Only a real horizontal
+     input (shift+wheel, trackpad swipe — deltaX dominant) should move the
+     carousel; a plain vertical tick should keep scrolling the popup/page. */
+  document.addEventListener("wheel", (e) => {
+    const grid = e.target.closest && e.target.closest(".video-grid");
+    if (!grid) return;
+    if (Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
+    const scrollBox = grid.closest(".modal-body");
+    if (scrollBox) {
+      scrollBox.scrollTop += e.deltaY;
+    } else {
+      window.scrollBy(0, e.deltaY);
+    }
+    e.preventDefault();
+  }, { passive: false });
+
   function unlockScroll() {
     document.documentElement.classList.remove("modal-locked");
     document.body.classList.remove("modal-locked");
