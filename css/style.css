@@ -871,7 +871,12 @@ body:has(.hero-pin) main{ padding-top:0; }
 .modal-close:hover{ background:var(--surface-2); }
 .modal-close svg{ width:17px; height:17px; stroke:var(--text-1); }
 
-.modal-body{ overflow-y:auto; padding:var(--sp-8); flex:1; }
+/* touch-action:pan-x pan-y undoes the touch-action:none the background-
+   scroll lock puts on <body> while a modal is open (see body.modal-locked
+   below) — without this override, that "none" cascades down onto every
+   descendant, including the horizontal video carousel, and blocks touch
+   swiping inside the popup entirely, not just background scroll. */
+.modal-body{ overflow-y:auto; padding:var(--sp-8); flex:1; touch-action:pan-x pan-y; }
 
 /* On small screens the popup takes over the whole viewport instead of
    floating as a card — no rounded corners, no surrounding gap, and it uses
