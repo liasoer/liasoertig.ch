@@ -1050,13 +1050,8 @@ body.modal-locked{
 .video-player.is-embed.is-portrait{ aspect-ratio:9/16; }
 
 /* Some projects (e.g. a batch of short portrait clips) opt into the same
-   horizontal swipe-carousel treatment as mobile — set via item.videosCarousel
-   in data.js. This base rule only really matters on mobile now (see the
-   min-width:701px override right below, which drops the horizontal-scroll
-   carousel on desktop entirely): a mouse wheel doesn't reliably drive
-   horizontal scroll cross-browser, so on desktop it's simpler and more
-   robust to just wrap into rows of up to 3 and let normal vertical
-   scrolling — which already works fine inside the popup — reach the rest. */
+   horizontal swipe-carousel treatment on desktop too, instead of wrapping
+   into a grid — set via item.videosCarousel in data.js. */
 .video-grid.is-carousel{
   flex-wrap:nowrap;
   justify-content:flex-start;
@@ -1066,25 +1061,6 @@ body.modal-locked{
   padding-bottom:var(--sp-2);
 }
 .video-grid.is-carousel .video-item{ scroll-snap-align:center; }
-@media (min-width:701px){
-  .video-grid.is-carousel{
-    flex-wrap:wrap;
-    justify-content:center;
-    overflow-x:visible;
-    scroll-snap-type:none;
-    padding-bottom:0;
-  }
-  .video-grid.is-carousel .video-item{
-    scroll-snap-align:none;
-    flex:1 1 260px;
-    max-width:calc(33.333% - var(--sp-4));
-  }
-  .video-grid.is-carousel .video-player.is-portrait{
-    height:auto;
-    width:100%;
-    max-width:100%;
-  }
-}
 
 /* On mobile, multiple videos become a horizontal swipe carousel instead of
    stacking vertically — each slide is sized a little narrower than the
