@@ -816,6 +816,15 @@
     const to = document.querySelector(".hero-slide--photography");
     if (!pin || !stage || !from || !to) return;
 
+    // The gap-revealing clip (see update() below) must only cut into the
+    // background media, never the caption text sitting on top of it —
+    // clipping the whole .hero-slide previously chopped letters off the
+    // title itself ("EDITORIAL" turning into "TORIAL") whenever the slide
+    // was partway clipped.
+    const fromMedia = from.querySelector(".hero-slide-media, .hero-slide-overlay");
+    const fromLayers = from.querySelectorAll(".hero-slide-media, .hero-slide-overlay");
+    const toLayers = to.querySelectorAll(".hero-slide-media, .hero-slide-overlay");
+
     // Some browsers ignore/deprioritize the autoplay attribute — nudge any
     // hero-slide video explicitly, silently ignoring rejection. Setting the
     // `muted` property (not just the attribute) is what actually satisfies
@@ -925,32 +934,37 @@
       }, 140);
     }
 
-    // At rest (p=0) the Photography slide isn't fully off-screen — it sits
-    // just off the right edge with PEEK's worth of itself still showing, as
-    // a permanent visual hint that there's a second slide to scroll to
-    // (replaces the old animated scroll-mouse hint, which is gone now).
+    // Neither slide ever fully leaves the frame — whichever one is "active"
+    // (Projects at p=0, Photography at p=1) still leaves PEEK's worth of the
+    // other one showing at the opposite edge, as a permanent visual hint
+    // that there's a second slide over there (replaces the old animated
+    // scroll-mouse hint, which is gone now). Symmetric on both ends: Projects
+    // peeks on the left once you've scrolled to Photography, the same way
+    // Photography peeks on the right at rest.
     const PEEK = 0.1;
     // Both slides are full-bleed layers sitting on the exact same footprint
     // (that's what makes the cross-fade/slide transition work), so without
-    // this, "to"'s peeking sliver just overlaps invisibly on top of "from"'s
-    // own right edge — there's no actual gap between them, just an abrupt
-    // cut. Clipping that same width + a bit extra off "from"'s right edge
+    // this, whichever one is peeking just overlaps invisibly on top of the
+    // other's edge — there's no actual gap between them, just an abrupt cut.
+    // Clipping that same width + a bit extra off the settled slide's edge
     // reveals the stage's own background color there instead, reading as a
-    // real gap between the two tiles. Shrinks back to nothing by the time
-    // "from" has slid away anyway, so it never affects the Projects slide
-    // once you're actually scrolling toward Photography.
-    const GAP = 24;
+    // real gap between the two tiles.
+    const GAP = 0;
 
     function update() {
       const scrolled = -pin.getBoundingClientRect().top;
       const p = range > 0 ? Math.min(Math.max(scrolled / range, 0), 1) : 0;
       const peekPx = step * PEEK;
+      const travel = step - peekPx; // distance each slide actually moves, leaving PEEK showing at the far end
 
-      from.style.transform = `translateX(${-p * step}px)`;
-      from.style.clipPath = `inset(0 ${(1 - p) * (peekPx + GAP)}px 0 0)`;
+      // "round 20px" matches .hero-slide's own border-radius, so the newly
+      // clipped edge reads as a rounded corner instead of a hard cut.
+      from.style.transform = `translateX(${-p * travel}px)`;
+      from.style.clipPath = `inset(0 ${(1 - p) * (peekPx + GAP)}px 0 0 round 20px)`;
       from.style.pointerEvents = p < 0.5 ? "auto" : "none";
 
-      to.style.transform = `translateX(${(1 - p) * (step - peekPx)}px)`;
+      to.style.transform = `translateX(${(1 - p) * travel}px)`;
+      to.style.clipPath = `inset(0 0 0 ${p * (peekPx + GAP)}px round 20px)`;
       to.style.pointerEvents = p >= 0.5 ? "auto" : "none";
 
       ticking = false;
