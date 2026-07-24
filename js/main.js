@@ -930,15 +930,27 @@
     // a permanent visual hint that there's a second slide to scroll to
     // (replaces the old animated scroll-mouse hint, which is gone now).
     const PEEK = 0.1;
+    // Both slides are full-bleed layers sitting on the exact same footprint
+    // (that's what makes the cross-fade/slide transition work), so without
+    // this, "to"'s peeking sliver just overlaps invisibly on top of "from"'s
+    // own right edge — there's no actual gap between them, just an abrupt
+    // cut. Clipping that same width + a bit extra off "from"'s right edge
+    // reveals the stage's own background color there instead, reading as a
+    // real gap between the two tiles. Shrinks back to nothing by the time
+    // "from" has slid away anyway, so it never affects the Projects slide
+    // once you're actually scrolling toward Photography.
+    const GAP = 24;
 
     function update() {
       const scrolled = -pin.getBoundingClientRect().top;
       const p = range > 0 ? Math.min(Math.max(scrolled / range, 0), 1) : 0;
+      const peekPx = step * PEEK;
 
       from.style.transform = `translateX(${-p * step}px)`;
+      from.style.clipPath = `inset(0 ${(1 - p) * (peekPx + GAP)}px 0 0)`;
       from.style.pointerEvents = p < 0.5 ? "auto" : "none";
 
-      to.style.transform = `translateX(${(1 - p) * step * (1 - PEEK)}px)`;
+      to.style.transform = `translateX(${(1 - p) * (step - peekPx)}px)`;
       to.style.pointerEvents = p >= 0.5 ? "auto" : "none";
 
       ticking = false;
