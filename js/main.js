@@ -360,6 +360,8 @@
 
           <div class="modal-pane" data-pane="videos">
             <div class="video-grid m-video-grid"></div>
+            <button class="video-carousel-nav video-carousel-nav--prev" aria-label="Previous video">${ICON_PREV}</button>
+            <button class="video-carousel-nav video-carousel-nav--next" aria-label="Next video">${ICON_NEXT}</button>
           </div>
         </div>
       </div>`;
@@ -563,6 +565,13 @@
     // (see .video-grid.is-carousel in style.css), not just on mobile.
     gridEl.classList.toggle("is-carousel", !!item.videosCarousel);
 
+    // Prev/next buttons are the only reliable way to drive this carousel
+    // with a mouse — see the .video-carousel-nav comment in style.css for
+    // why a wheel can't do it (the clips are cross-origin YouTube iframes).
+    const paneEl = gridEl.closest('.modal-pane[data-pane="videos"]');
+    const hasCarousel = !!item.videosCarousel && videos.length > 1;
+    if (paneEl) paneEl.classList.toggle("has-carousel", hasCarousel);
+
     gridEl.innerHTML = videos
       .map((v, i) => {
         const countBadge = showCount ? `<span class="vp-count">${i + 1} / ${videos.length}</span>` : "";
@@ -642,6 +651,28 @@
           } catch (e) {}
         });
       });
+    }
+
+    if (hasCarousel && paneEl) {
+      const prevBtn = paneEl.querySelector(".video-carousel-nav--prev");
+      const nextBtn = paneEl.querySelector(".video-carousel-nav--next");
+      // Re-assigning (not addEventListener) each time this renders, so
+      // reopening a different project's popup doesn't stack up duplicate
+      // handlers pointing at a stale gridEl from the previous project.
+      const step = (dir) => {
+        const firstItem = gridEl.querySelector(".video-item");
+        const amount = firstItem ? firstItem.getBoundingClientRect().width + 16 : gridEl.clientWidth * 0.8;
+        gridEl.scrollBy({ left: dir * amount, behavior: "smooth" });
+      };
+      const updateNavState = () => {
+        const max = gridEl.scrollWidth - gridEl.clientWidth;
+        prevBtn.disabled = gridEl.scrollLeft <= 4;
+        nextBtn.disabled = gridEl.scrollLeft >= max - 4;
+      };
+      prevBtn.onclick = () => step(-1);
+      nextBtn.onclick = () => step(1);
+      gridEl.onscroll = updateNavState;
+      updateNavState();
     }
   }
 
@@ -734,9 +765,14 @@
     const covers = typeof PHOTOGRAPHY !== "undefined"
       ? PHOTOGRAPHY.filter((p) => p.images && p.images.length > 0).slice(0, 10).map((p) => p.cover)
       : [];
+    // Overall intro pacing: every delay below is defined at its original,
+    // as-tuned value, then scaled down by SPEED in one place (t()) so the
+    // whole thing plays out noticeably quicker without changing the
+    // relative rhythm between steps (nothing here should be pre-scaled).
+    const SPEED = 0.7;
     const FLASH_STEP = 130; // ms between each photo cut
 
-    const t = (fn, ms) => setTimeout(fn, ms);
+    const t = (fn, ms) => setTimeout(fn, ms * SPEED);
     t(() => eyebrow && eyebrow.classList.add("show"), 120);
     // LIAS and OERTIG fade in already apart, with the empty card gap between them.
     t(() => {

@@ -91,7 +91,9 @@ const PROJECTS = [
     cover: "assets/posters/to-enni-cover.png",
     accent: ["#dadf5c", "#a3df5c", "#dfb05c"],
     images: [],
-    comingSoon: "Coming soon"
+    videos: [
+      { title: "Video", youtube: "V_NwN7lnX1U" }
+    ]
   },
   {
     slug: "camille-showreel",

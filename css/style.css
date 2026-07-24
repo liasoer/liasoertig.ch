@@ -363,6 +363,12 @@ body:has(.hero-pin) main{ padding-top:0; }
   opacity:0; transition:opacity 500ms var(--ease-ui);
 }
 .loader-bottom.show{ opacity:1; }
+@media (max-width:700px){
+  /* Photographer / Videographer / Established in 2021 — drop this line on
+     mobile, where the loader has much less vertical room to breathe and
+     the wordmark itself already carries the moment fine on its own. */
+  .loader-bottom{ display:none; }
+}
 
 .page-content{ position:relative; }
 
@@ -551,6 +557,18 @@ body:has(.hero-pin) main{ padding-top:0; }
   font-size:clamp(48px,9vw,140px);
   color:#fff;
   line-height:0.92; letter-spacing:-0.01em;
+}
+/* Same orange arrow badge as the project/photography grid cards (.arrow,
+   defined above near .card-title-glass) — reused here so the two hero
+   tiles read as clickable the same way the smaller cards do. */
+.hero-slide-title-row{
+  display:flex; align-items:center; gap:var(--sp-4);
+}
+@media (hover:hover) and (pointer:fine){
+  .hero-slide:hover .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
+}
+@media (hover:none){
+  .hero-slide .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
 }
 @media (max-width:700px){
   .hero-slide-caption{ left:var(--sp-5); bottom:var(--sp-4); }
@@ -989,8 +1007,38 @@ body.modal-locked{
 .modal-pane[data-pane="videos"].is-active{
   display:flex; align-items:center; justify-content:center;
   min-height:100%;
+  position:relative;
 }
 .modal-pane[data-pane="videos"].is-active .video-grid{ width:100%; }
+
+/* Prev/next arrows for the horizontal video carousel (Bubble Event, Dancing,
+   etc.). A mouse wheel can't drive this carousel at all: the clips are
+   cross-origin YouTube iframes, so while the cursor is over one, the wheel
+   event fires inside the iframe's own document and never reaches this
+   page's JS — no CSS or JS on our side can see or redirect it. Buttons
+   sidestep the problem entirely, since a click on them never happens "over"
+   an iframe. Hidden on mobile, where the carousel is a plain touch-swipe
+   instead — that already works natively and doesn't hit the iframe issue,
+   since same-axis touch scrolling chains across the iframe boundary fine. */
+.video-carousel-nav{
+  display:none;
+  position:absolute; top:50%; z-index:3;
+  width:44px; height:44px; margin-top:-22px;
+  border-radius:var(--r-pill); border:1px solid var(--edge-b);
+  background:rgba(var(--glass-rgb),0.6);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  align-items:center; justify-content:center;
+  transition:background var(--dur-fast) var(--ease-ui), opacity var(--dur-fast) var(--ease-ui);
+}
+.video-carousel-nav:hover{ background:var(--surface-2); }
+.video-carousel-nav:disabled{ opacity:0.25; pointer-events:none; }
+.video-carousel-nav svg{ width:18px; height:18px; stroke:var(--text-1); }
+.video-carousel-nav--prev{ left:var(--sp-4); }
+.video-carousel-nav--next{ right:var(--sp-4); }
+.modal-pane[data-pane="videos"].has-carousel .video-carousel-nav{ display:flex; }
+@media (max-width:700px){
+  .video-carousel-nav{ display:none !important; }
+}
 .coming-soon{
   width:100%; text-align:center;
   font-family:var(--font-display); font-size:14px; letter-spacing:0.08em; text-transform:uppercase;
