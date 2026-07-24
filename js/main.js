@@ -895,22 +895,6 @@
     // inline transforms below would fight the CSS horizontal-scroll layout.
     if (window.matchMedia("(max-width:700px)").matches) return;
 
-    // Scroll-mouse hint in the middle of each card: visible while the page
-    // is at rest, hidden the instant the user actually scrolls so it isn't
-    // fighting the slide animation, then faded back in once scrolling has
-    // genuinely settled again (not just between two scroll-event ticks).
-    const scrollHints = Array.from(document.querySelectorAll(".hero-scroll-hint"));
-    let hintTimer = null;
-    function hideHints() {
-      scrollHints.forEach((h) => h.classList.add("is-hidden"));
-    }
-    function scheduleHintShow() {
-      if (hintTimer) clearTimeout(hintTimer);
-      hintTimer = setTimeout(() => {
-        scrollHints.forEach((h) => h.classList.remove("is-hidden"));
-      }, 250);
-    }
-
     let ticking = false;
     let snapTimer = null;
 
@@ -941,6 +925,12 @@
       }, 140);
     }
 
+    // At rest (p=0) the Photography slide isn't fully off-screen — it sits
+    // just off the right edge with PEEK's worth of itself still showing, as
+    // a permanent visual hint that there's a second slide to scroll to
+    // (replaces the old animated scroll-mouse hint, which is gone now).
+    const PEEK = 0.1;
+
     function update() {
       const scrolled = -pin.getBoundingClientRect().top;
       const p = range > 0 ? Math.min(Math.max(scrolled / range, 0), 1) : 0;
@@ -948,7 +938,7 @@
       from.style.transform = `translateX(${-p * step}px)`;
       from.style.pointerEvents = p < 0.5 ? "auto" : "none";
 
-      to.style.transform = `translateX(${(1 - p) * step}px)`;
+      to.style.transform = `translateX(${(1 - p) * step * (1 - PEEK)}px)`;
       to.style.pointerEvents = p >= 0.5 ? "auto" : "none";
 
       ticking = false;
@@ -959,8 +949,6 @@
         ticking = true;
         requestAnimationFrame(update);
       }
-      hideHints();
-      scheduleHintShow();
       scheduleSnap();
     }, { passive: true });
     window.addEventListener("resize", () => {
