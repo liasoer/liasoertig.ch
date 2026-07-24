@@ -812,16 +812,16 @@
   (function initHeroSlides() {
     const pin = document.querySelector(".hero-pin");
     const stage = document.querySelector(".hero-stage");
+    const frame = document.querySelector(".hero-frame");
     const from = document.querySelector(".hero-slide--projects");
     const to = document.querySelector(".hero-slide--photography");
-    if (!pin || !stage || !from || !to) return;
+    if (!pin || !stage || !frame || !from || !to) return;
 
     // The gap-revealing clip (see update() below) must only cut into the
     // background media, never the caption text sitting on top of it —
     // clipping the whole .hero-slide previously chopped letters off the
     // title itself ("EDITORIAL" turning into "TORIAL") whenever the slide
     // was partway clipped.
-    const fromMedia = from.querySelector(".hero-slide-media, .hero-slide-overlay");
     const fromLayers = from.querySelectorAll(".hero-slide-media, .hero-slide-overlay");
     const toLayers = to.querySelectorAll(".hero-slide-media, .hero-slide-overlay");
 
@@ -917,7 +917,12 @@
     let step = 0;
     function measure() {
       range = pin.offsetHeight - stage.offsetHeight;
-      step = stage.offsetWidth;
+      // Must be the frame's own width, not the stage's — .hero-frame sits
+      // inset:64px inside .hero-stage, so using the stage's (larger) width
+      // here overshot every translateX by that ~128px margin, pushing the
+      // peek slice (peekPx, a small fraction of this width) entirely past
+      // the frame's own clipped edge and making it invisible.
+      step = frame.offsetWidth;
     }
 
     // Once scrolling settles, snap to whichever slide is closer — you can
@@ -941,7 +946,7 @@
     // scroll-mouse hint, which is gone now). Symmetric on both ends: Projects
     // peeks on the left once you've scrolled to Photography, the same way
     // Photography peeks on the right at rest.
-    const PEEK = 0.1;
+    const PEEK = 0.05;
     // Both slides are full-bleed layers sitting on the exact same footprint
     // (that's what makes the cross-fade/slide transition work), so without
     // this, whichever one is peeking just overlaps invisibly on top of the
@@ -957,14 +962,22 @@
       const peekPx = step * PEEK;
       const travel = step - peekPx; // distance each slide actually moves, leaving PEEK showing at the far end
 
-      // "round 20px" matches .hero-slide's own border-radius, so the newly
-      // clipped edge reads as a rounded corner instead of a hard cut.
+      // The clip only ever cuts into the media/overlay layers (fromLayers/
+      // toLayers) — never the outer .hero-slide tile itself, which also
+      // contains the caption text. Clipping the whole tile used to chop
+      // letters off the title ("EDITORIAL" → "TORIAL") whenever the slide
+      // was partway through its clip. "round 20px" matches .hero-slide's own
+      // border-radius, so the newly clipped edge still reads as a rounded
+      // corner instead of a hard cut.
+      const fromClip = `inset(0 ${(1 - p) * (peekPx + GAP)}px 0 0 round 20px)`;
+      const toClip = `inset(0 0 0 ${p * (peekPx + GAP)}px round 20px)`;
+
       from.style.transform = `translateX(${-p * travel}px)`;
-      from.style.clipPath = `inset(0 ${(1 - p) * (peekPx + GAP)}px 0 0 round 20px)`;
+      fromLayers.forEach((el) => { el.style.clipPath = fromClip; });
       from.style.pointerEvents = p < 0.5 ? "auto" : "none";
 
       to.style.transform = `translateX(${(1 - p) * travel}px)`;
-      to.style.clipPath = `inset(0 0 0 ${p * (peekPx + GAP)}px round 20px)`;
+      toLayers.forEach((el) => { el.style.clipPath = toClip; });
       to.style.pointerEvents = p >= 0.5 ? "auto" : "none";
 
       ticking = false;

@@ -488,12 +488,15 @@ body:has(.hero-pin) main{ padding-top:0; }
 .hero-corner--br{ bottom:var(--sp-6); right:var(--sp-6); }
 .hero-slide-caption{
   position:absolute; z-index:2; left:var(--sp-8);
-  /* Mirrors the left offset so .hero-slide-title-row spans the full width
-     of the slide — needed for its justify-content:space-between to pin the
-     arrow at the far right edge instead of just floating next to the text. */
+  /* Caps how wide the title row is allowed to grow (long titles still wrap
+     instead of overflowing the slide), but align-items:flex-start below
+     keeps the row itself sized to its own content rather than stretching
+     to fill this whole width — on a near-viewport-wide hero slide, letting
+     it stretch (the previous approach) put the arrow visually detached,
+     almost a slide's-width away from the title text. */
   right:var(--sp-8);
   bottom:108px;
-  display:flex; flex-direction:column; gap:2px;
+  display:flex; flex-direction:column; align-items:flex-start; gap:2px;
 }
 /* The huge display font's "P"/"PH" glyphs carry noticeably more built-in
    left-side bearing than the small eyebrow's letters, so at this scale the
@@ -511,18 +514,31 @@ body:has(.hero-pin) main{ padding-top:0; }
 }
 /* Same orange arrow badge as the project/photography grid cards (.arrow,
    defined above near .card-title-glass) — reused here so the two hero
-   tiles read as clickable the same way the smaller cards do.
-   justify-content:space-between pins the arrow to the row's far right
-   edge, same relative spot the grid cards put it in (title left, arrow
-   right) — a fixed gap next to the text (the previous approach) put it in
-   a different place for every title depending on how long the word was. */
+   tiles read as clickable the same way the smaller cards do. On the grid
+   cards, space-between reads fine because the card itself is narrow; the
+   hero frame is nearly viewport-wide, so stretching this row across the
+   whole thing (space-between's old job) stranded the arrow almost a full
+   slide-width away from the title. Now that .hero-slide-caption doesn't
+   stretch this row to full width (align-items:flex-start there), the row
+   is only as wide as title+gap+arrow, so justify-content has no real work
+   left to do — kept as flex-start for clarity. */
 .hero-slide-title-row{
-  display:flex; align-items:center; justify-content:space-between; gap:var(--sp-4);
+  display:flex; align-items:center; justify-content:flex-start; gap:var(--sp-4);
 }
 /* Always visible here — unlike the grid cards (which reveal on hover), the
    hero tiles are big enough that a hover-only arrow felt too subtle, and on
    touch devices there's no hover at all to reveal it with anyway. */
 .hero-slide .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
+@media (min-width:701px){
+  /* Photography peeks Projects in on the LEFT edge once it's the active
+     slide (see the clip-path math in initHeroSlides()/update() in main.js)
+     — that reveal strip is roughly 5% of the frame's width, well past the
+     plain --sp-8 offset every other caption uses, so the title started
+     right on top of the clipped seam instead of clear of it. Only this
+     slide needs the extra room; Projects peeks on the right instead, well
+     away from its own left-aligned caption. */
+  .hero-slide--photography .hero-slide-caption{ left:calc(var(--sp-8) + 6vw); }
+}
 @media (max-width:700px){
   .hero-slide-caption{ left:var(--sp-5); right:var(--sp-5); bottom:var(--sp-4); }
   /* The "+" corner marks were a desktop-only decorative touch — on the
