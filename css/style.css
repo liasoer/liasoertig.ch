@@ -488,6 +488,10 @@ body:has(.hero-pin) main{ padding-top:0; }
 .hero-corner--br{ bottom:var(--sp-6); right:var(--sp-6); }
 .hero-slide-caption{
   position:absolute; z-index:2; left:var(--sp-8);
+  /* Mirrors the left offset so .hero-slide-title-row spans the full width
+     of the slide — needed for its justify-content:space-between to pin the
+     arrow at the far right edge instead of just floating next to the text. */
+  right:var(--sp-8);
   /* Leaves room below for the scroll-mouse hint (bottom:var(--sp-8), ~58px
      tall including its label) plus a gap of at least half the mouse
      icon's own height (18px) above it: 32 + 58 + 18 = 108px. */
@@ -557,21 +561,27 @@ body:has(.hero-pin) main{ padding-top:0; }
   font-size:clamp(48px,9vw,140px);
   color:#fff;
   line-height:0.92; letter-spacing:-0.01em;
+  /* Flex items default to a min-width equal to their own content's natural
+     width, which can stop them from ever wrapping/shrinking inside the
+     row — same fix as .card-title-glass h3 uses for the same reason. */
+  min-width:0;
 }
 /* Same orange arrow badge as the project/photography grid cards (.arrow,
    defined above near .card-title-glass) — reused here so the two hero
-   tiles read as clickable the same way the smaller cards do. */
+   tiles read as clickable the same way the smaller cards do.
+   justify-content:space-between pins the arrow to the row's far right
+   edge, same relative spot the grid cards put it in (title left, arrow
+   right) — a fixed gap next to the text (the previous approach) put it in
+   a different place for every title depending on how long the word was. */
 .hero-slide-title-row{
-  display:flex; align-items:center; gap:var(--sp-4);
+  display:flex; align-items:center; justify-content:space-between; gap:var(--sp-4);
 }
-@media (hover:hover) and (pointer:fine){
-  .hero-slide:hover .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
-}
-@media (hover:none){
-  .hero-slide .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
-}
+/* Always visible here — unlike the grid cards (which reveal on hover), the
+   hero tiles are big enough that a hover-only arrow felt too subtle, and on
+   touch devices there's no hover at all to reveal it with anyway. */
+.hero-slide .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
 @media (max-width:700px){
-  .hero-slide-caption{ left:var(--sp-5); bottom:var(--sp-4); }
+  .hero-slide-caption{ left:var(--sp-5); right:var(--sp-5); bottom:var(--sp-4); }
   /* The "+" corner marks were a desktop-only decorative touch — on the
      smaller mobile cards they just added clutter, so hide them entirely. */
   .hero-corner{ display:none; }
