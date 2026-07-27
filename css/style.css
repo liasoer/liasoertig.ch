@@ -1,10 +1,40 @@
 /* ==========================================================================
    Lias Oertig — Portfolio Website
-   Vanilla CSS design system (ink/paper/accent, Space Grotesk/Archivo)
+   Vanilla CSS design system (ink/paper/accent, Forma DJR)
    Supports light + dark theme via :root[data-theme="dark"]
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Archivo:wght@400;500;600&display=swap');
+/* Forma DJR ships as separate optical-size cuts (smallest → largest:
+   Micro, Text, Deck, Display, Banner) rather than one family scaled up —
+   each is drawn for a specific size range, so using the size-matched cut
+   reads sharper than stretching one face across every point size. Only the
+   Bold weight of each is loaded, per the site-wide "bold everywhere" call:
+   Text for regular reading-size text, Display for headings/labels, Banner
+   for the oversized hero/loader titles (the biggest sizes on the site). */
+@font-face {
+  font-family: 'FormaDJRText';
+  src: url('../assets/fonts/FormaDJRText-Bold.woff2') format('woff2'),
+       url('../assets/fonts/FormaDJRText-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'FormaDJRDisplay';
+  src: url('../assets/fonts/FormaDJRDisplay-Bold.woff2') format('woff2'),
+       url('../assets/fonts/FormaDJRDisplay-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'FormaDJRBanner';
+  src: url('../assets/fonts/FormaDJRBanner-Bold.woff2') format('woff2'),
+       url('../assets/fonts/FormaDJRBanner-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* ---------- Tokens ---------- */
 :root{
@@ -30,9 +60,13 @@
   --shadow-lg: 0 18px 48px rgba(22,21,19,0.16);
   --scrim: rgba(18,17,16,0.86);
 
-  /* type */
-  --font-display: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
-  --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  /* type — Forma DJR Bold throughout: Display for headings/labels, Text
+     for body copy, Banner reserved for the few oversized hero/loader
+     titles (see .hero-slide-title / .loader-word) rather than a variable
+     everything routes through, since those sizes are a one-off extreme. */
+  --font-display: 'FormaDJRDisplay', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'FormaDJRText', 'Helvetica Neue', Arial, sans-serif;
+  --font-banner: 'FormaDJRBanner', 'FormaDJRDisplay', 'Helvetica Neue', Arial, sans-serif;
 
   /* spacing (4px scale) */
   --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px;
@@ -321,7 +355,9 @@ body:has(.hero-pin) main{ padding-top:0; }
 .loader-word{
   position:relative;
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-display); font-weight:700; text-transform:uppercase;
+  /* Biggest text on the site (up to 190px) — the Banner cut is drawn for
+     exactly this size range, unlike Display which is tuned smaller. */
+  font-family:var(--font-banner); font-weight:700; text-transform:uppercase;
   font-size:clamp(44px,11.5vw,190px);
   letter-spacing:-0.01em; line-height:0.92;
   color:var(--text-1);
@@ -504,6 +540,9 @@ body:has(.hero-pin) main{ padding-top:0; }
    same container — nudge the eyebrow right to match what the eye expects. */
 .hero-slide-eyebrow{ color:rgba(255,255,255,0.85); margin-left:clamp(3px, 0.7vw, 10px); }
 .hero-slide-title{
+  /* Same reasoning as .loader-word — this runs up to 140px, well into
+     Banner's intended size range rather than Display's. */
+  font-family:var(--font-banner);
   font-size:clamp(48px,9vw,140px);
   color:#fff;
   line-height:0.92; letter-spacing:-0.01em;
