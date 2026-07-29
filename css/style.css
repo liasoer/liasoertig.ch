@@ -574,6 +574,20 @@ body:has(.hero-pin) main{ padding-top:0; }
    hero tiles are big enough that a hover-only arrow felt too subtle, and on
    touch devices there's no hover at all to reveal it with anyway. */
 .hero-slide .arrow{ opacity:1; transform:translateX(0); background:var(--accent-500); border-color:var(--accent-500); }
+/* The arrow now flows inline at the end of the title's last line (it lives
+   inside the <h2> in the markup) and is centred on that line via
+   vertical-align, rather than sitting as a separate flex sibling anchored to
+   the row's baseline. The old baseline anchor dropped the small badge into the
+   bottom corner of the very large type, so it read as too low; centring it on
+   the line keeps it beside the last word (even when the title wraps to two
+   lines on mobile) and scales the offset with the clamped title size. */
+.hero-slide-title .arrow{
+  display:inline-flex;
+  vertical-align:middle;
+  position:relative;
+  top:-0.05em;         /* nudge up to the caps' optical centre (em = title size) */
+  margin-left:0.24em;  /* gap between title and arrow scales with the title */
+}
 @media (min-width:701px){
   /* Photography peeks Projects in on the LEFT edge once it's the active
      slide (see the clip-path math in initHeroSlides()/update() in main.js)
