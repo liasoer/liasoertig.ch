@@ -975,10 +975,19 @@
       from.style.transform = `translateX(${-p * travel}px)`;
       fromLayers.forEach((el) => { el.style.clipPath = fromClip; });
       from.style.pointerEvents = p < 0.5 ? "auto" : "none";
+      // The corner "+" marks aren't clipped like the media/overlay (see
+      // fromLayers/toLayers above — they're deliberately excluded so they
+      // don't get cut off), so without this the peeking slide's own corner
+      // marks always render at full strength too, landing right next to
+      // the active slide's marks in the sliver and reading as a doubled-up
+      // "+ +" glitch. Hiding them on whichever slide is just peeking (not
+      // active) keeps only one set of corners visible at a time.
+      from.classList.toggle("is-peek-only", p >= 0.5);
 
       to.style.transform = `translateX(${(1 - p) * travel}px)`;
       toLayers.forEach((el) => { el.style.clipPath = toClip; });
       to.style.pointerEvents = p >= 0.5 ? "auto" : "none";
+      to.classList.toggle("is-peek-only", p < 0.5);
 
       ticking = false;
     }

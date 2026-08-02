@@ -512,18 +512,21 @@ body:has(.hero-pin) main{ padding-top:0; }
              linear-gradient(0deg, rgba(12,11,10,0.82) 0%, rgba(12,11,10,0.1) 45%, rgba(12,11,10,0.3) 100%);
 }
 .hero-corner{
-  position:absolute; z-index:2;
-  width:26px; height:26px;
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-display); font-size:20px; font-weight:400;
-  color:rgba(255,255,255,0.55);
+  /* Removed per request — was a decorative "+" accent in each tile corner. */
+  display:none;
 }
 .hero-corner--tl{ top:var(--sp-6); left:var(--sp-6); }
 .hero-corner--tr{ top:var(--sp-6); right:var(--sp-6); }
 .hero-corner--bl{ bottom:var(--sp-6); left:var(--sp-6); }
 .hero-corner--br{ bottom:var(--sp-6); right:var(--sp-6); }
+/* The peeking (inactive) slide's own corner marks aren't clipped along with
+   its media (see the fromLayers/toLayers comment in initHeroSlides() in
+   main.js), so they'd otherwise always show at full strength right next to
+   the active slide's marks in the sliver, reading as a doubled "+ +" glitch.
+   Hide them on whichever slide is just peeking. */
+.hero-slide.is-peek-only .hero-corner{ opacity:0; }
 .hero-slide-caption{
-  position:absolute; z-index:2; left:var(--sp-8);
+  position:absolute; z-index:2; left:var(--sp-6);
   /* Caps how wide the title row is allowed to grow (long titles still wrap
      instead of overflowing the slide), but align-items:flex-start below
      keeps the row itself sized to its own content rather than stretching
@@ -531,14 +534,26 @@ body:has(.hero-pin) main{ padding-top:0; }
      it stretch (the previous approach) put the arrow visually detached,
      almost a slide's-width away from the title text. */
   right:var(--sp-8);
-  bottom:108px;
+  /* Reduced from 108px — the tagline added below the title is a new,
+     lower-most child of this bottom-anchored flex column, so without this
+     compensation the whole block (and the title with it) simply shifted
+     upward by the tagline's height to make room. This brings the title
+     back to its original v234 position, with the tagline now occupying
+     the freed space beneath it instead of pushing the title up. */
+  bottom:40px;
   display:flex; flex-direction:column; align-items:flex-start; gap:2px;
 }
-/* The huge display font's "P"/"PH" glyphs carry noticeably more built-in
-   left-side bearing than the small eyebrow's letters, so at this scale the
-   two visually don't share a left edge even though both sit flush in the
-   same container — nudge the eyebrow right to match what the eye expects. */
-.hero-slide-eyebrow{ color:rgba(255,255,255,0.85); margin-left:clamp(3px, 0.7vw, 10px); }
+/* Optical alignment, not box alignment — a big round letter like the
+   title's "C" overshoots past its own flat box edge, so its optical
+   (non-overshoot) edge actually sits to the right of that box edge. A
+   straight-sided eyebrow line needs a matching positive nudge to land on
+   that same optical edge, not a flush margin:0. Small on purpose — adjust
+   further if a screenshot still shows it off. */
+/* Matches .hero-slide-tagline's font (Forma DJR Text) instead of the base
+   .eyebrow class's display font, so the two small lines in this caption
+   read as one consistent voice — text-transform:uppercase still comes from
+   .eyebrow itself, so the caps stay, only the typeface changes. */
+.hero-slide-eyebrow{ font-family:var(--font-body); color:var(--accent-500); margin-left:4px; }
 .hero-slide-title{
   /* Same reasoning as .loader-word — this runs up to 140px, well into
      Banner's intended size range rather than Display's. */
@@ -588,6 +603,15 @@ body:has(.hero-pin) main{ padding-top:0; }
   top:-0.05em;         /* nudge up to the caps' optical centre (em = title size) */
   margin-left:0.24em;  /* gap between title and arrow scales with the title */
 }
+.hero-slide-tagline{
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.3;
+  color:rgba(255,255,255,0.8);
+  margin-top:-10px; /* negative on top of the caption's 2px gap — the title's own line-height leaves empty space under the glyphs, so 0 still read as a visible gap */
+  margin-left:4px; /* same optical nudge as .hero-slide-eyebrow, see above */
+  max-width:32ch;
+}
 @media (min-width:701px){
   /* Photography peeks Projects in on the LEFT edge once it's the active
      slide (see the clip-path math in initHeroSlides()/update() in main.js)
@@ -596,7 +620,7 @@ body:has(.hero-pin) main{ padding-top:0; }
      right on top of the clipped seam instead of clear of it. Only this
      slide needs the extra room; Projects peeks on the right instead, well
      away from its own left-aligned caption. */
-  .hero-slide--photography .hero-slide-caption{ left:calc(var(--sp-8) + 6vw); }
+  .hero-slide--photography .hero-slide-caption{ left:calc(var(--sp-6) + 6vw); }
 }
 @media (max-width:700px){
   .hero-slide-caption{ left:var(--sp-5); right:var(--sp-5); bottom:var(--sp-4); }
@@ -620,7 +644,7 @@ body:has(.hero-pin) main{ padding-top:0; }
 }
 .section-head{ margin-bottom:var(--sp-10); }
 .section-head h1{ font-size:clamp(30px,4.5vw,48px); }
-.section-head p.lead{ font-family:var(--font-body); text-transform:none; font-size:17px; color:var(--text-2); margin-top:var(--sp-3); max-width:60ch; }
+.section-head p.lead{ font-family:var(--font-body); text-transform:none; font-size:17px; color:var(--text-2); margin-top:var(--sp-3); }
 
 /* ---------- Contact page ---------- */
 .contact-section{ position:relative; overflow:hidden; }
@@ -801,6 +825,11 @@ body:has(.hero-pin) main{ padding-top:0; }
   display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3);
 }
 .card-title-glass h3{
+  /* Overrides the global h1-h4 uppercase rule — these titles are now
+     written in proper Title Case in data.js (was previously typed in ALL
+     CAPS specifically to match this rule), so the forced transform would
+     undo that. */
+  text-transform:none;
   font-size:15px; line-height:1.28; letter-spacing:0.02em; color:#fff;
   text-shadow:0 1px 4px rgba(0,0,0,0.4);
   min-width:0;

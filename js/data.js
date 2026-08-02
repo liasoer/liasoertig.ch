@@ -15,7 +15,7 @@ const CDN = "https://images.squarespace-cdn.com/content/v1/6294b081d7e567047cfd1
 const PROJECTS = [
   {
     slug: "lothar-moebel",
-    title: "LOTHAR MÖBEL",
+    title: "Lothar Möbel",
     subtitle: "Doppelstrich",
     category: "Short Form Video Content",
     instagram: null,
@@ -30,7 +30,7 @@ const PROJECTS = [
   },
   {
     slug: "dancing",
-    title: "DANCING",
+    title: "Dancing",
     subtitle: "Camille & Sophie",
     category: "Short Form Video Content",
     instagram: "camillesjournal",
@@ -48,7 +48,7 @@ const PROJECTS = [
   },
   {
     slug: "bubble-event",
-    title: "BUBBLE EVENT",
+    title: "Bubble Event",
     subtitle: "NALI",
     category: "Short Form Video Content",
     instagram: null,
@@ -69,7 +69,7 @@ const PROJECTS = [
   },
   {
     slug: "look-in-the-mirror",
-    title: "LOOK IN THE MIRROR",
+    title: "Look in the mirror",
     subtitle: "Minyar",
     category: "Music Video",
     instagram: null,
@@ -97,7 +97,7 @@ const PROJECTS = [
   },
   {
     slug: "camille-showreel",
-    title: "SHOWREEL",
+    title: "Showreel",
     subtitle: "Camille",
     category: "Showreel",
     instagram: null,
@@ -111,7 +111,7 @@ const PROJECTS = [
   },
   {
     slug: "kuenstlercantina",
-    title: "KUENSTLERCANTINA",
+    title: "Kuenstlercantina",
     subtitle: "NALI",
     category: "Imagefilm (inkl. Trailer)",
     instagram: "kuenstlercantina",
@@ -257,7 +257,7 @@ const PHOTOGRAPHY = [
   },
   {
     slug: "dear-diary",
-    title: "DEAR DIARY",
+    title: "Dear Diary",
     subtitle: "Minyar",
     category: "Video",
     instagram: null,
