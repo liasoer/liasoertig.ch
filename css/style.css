@@ -608,7 +608,7 @@ body:has(.hero-pin) main{ padding-top:0; }
   font-size:15px;
   line-height:1.3;
   color:rgba(255,255,255,0.8);
-  margin-top:-10px; /* negative on top of the caption's 2px gap — the title's own line-height leaves empty space under the glyphs, so 0 still read as a visible gap */
+  margin-top:0; /* per-breakpoint override below — the negative desktop nudge doesn't work at mobile's much smaller title size */
   margin-left:4px; /* same optical nudge as .hero-slide-eyebrow, see above */
   max-width:32ch;
 }
@@ -621,12 +621,23 @@ body:has(.hero-pin) main{ padding-top:0; }
      slide needs the extra room; Projects peeks on the right instead, well
      away from its own left-aligned caption. */
   .hero-slide--photography .hero-slide-caption{ left:calc(var(--sp-6) + 6vw); }
+  /* Negative on top of the caption's 2px gap — the title's own line-height
+     leaves empty space under the glyphs at this large font-size, so 0 still
+     read as a visible gap. Desktop-only: at mobile's much smaller title size
+     this same value overshoots and crowds/overlaps the title. */
+  .hero-slide-tagline{ margin-top:-10px; }
 }
 @media (max-width:700px){
   .hero-slide-caption{ left:var(--sp-5); right:var(--sp-5); bottom:var(--sp-4); }
   /* The "+" corner marks were a desktop-only decorative touch — on the
      smaller mobile cards they just added clutter, so hide them entirely. */
   .hero-corner{ display:none; }
+  /* Titles like "Client Projects" wrap to two lines on narrow screens (see
+     .hero-slide-title-row's comment above), so the tagline needs its own
+     breathing room below the last line rather than the desktop's negative
+     pull-up — and a smaller size/width so it doesn't compete with the much
+     bigger title for attention on a small card. */
+  .hero-slide-tagline{ font-size:13px; line-height:1.4; margin-top:4px; max-width:26ch; }
 }
 
 /* ---------- Section ---------- */
