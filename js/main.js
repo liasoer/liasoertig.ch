@@ -762,9 +762,31 @@
     // entries (music videos etc.) are excluded so newly added videos at the
     // front of PHOTOGRAPHY don't bump the real portrait shoots out of this
     // flash — only shoots with an actual photo set qualify.
-    const covers = typeof PHOTOGRAPHY !== "undefined"
+    const allCovers = typeof PHOTOGRAPHY !== "undefined"
       ? PHOTOGRAPHY.filter((p) => p.images && p.images.length > 0).slice(0, 10).map((p) => p.cover)
       : [];
+
+    // Preload every photo BEFORE the sequence starts. Previously each frame
+    // only began loading the moment it was shown (130ms apart), so on a slow
+    // connection most of them hadn't arrived in time and the flash skipped
+    // or showed blanks. Now the intro waits for them (capped, so a very bad
+    // connection can't hold the page hostage) and only plays photos that
+    // actually loaded.
+    const PRELOAD_TIMEOUT = 5000; // ms
+    const preload = (src) => new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(src);
+      img.onerror = () => resolve(null);
+      img.src = cacheBust(src);
+    });
+    const timeout = new Promise((resolve) => setTimeout(() => resolve("timeout"), PRELOAD_TIMEOUT));
+    const loadedSet = new Set();
+    const tracked = allCovers.map((src) => preload(src).then((ok) => { if (ok) loadedSet.add(ok); }));
+    Promise.race([Promise.all(tracked), timeout]).then(() => {
+      runIntro(allCovers.filter((src) => loadedSet.has(src)));
+    });
+
+    function runIntro(covers) {
     // Overall intro pacing: every delay below is defined at its original,
     // as-tuned value, then scaled down by SPEED in one place (t()) so the
     // whole thing plays out noticeably quicker without changing the
@@ -799,6 +821,7 @@
       document.dispatchEvent(new Event("lo:intro-done"));
       t(() => loader.remove(), 750);
     }, flashEnd + 2150);
+    }
   })();
 
   /* ---------------------------------------------------------------------- */
