@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Statusleiste Varianten</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap">
+<style>
+:root{--bordeaux:#4A0F14;--papier:#EEE6D6;--papier-hell:#F4EEE3;--tinte:#26140F;--muted:#6B5A50;--blush:#E6CFC4}
+*{box-sizing:border-box}
+body{margin:0;background:#D9D0BE;font-family:"Newsreader",Georgia,serif;color:var(--tinte);-webkit-font-smoothing:antialiased}
+header{max-width:1100px;margin:0 auto;padding:28px 16px 8px}
+h1{font-family:"Cinzel",Georgia,serif;font-weight:600;color:var(--bordeaux);font-size:22px;margin:0 0 6px;letter-spacing:.02em}
+header p{margin:0;font-style:italic;color:var(--muted)}
+.steuer{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.steuer button{font:inherit;font-size:14px;padding:8px 14px;border:1px solid var(--bordeaux);background:transparent;color:var(--bordeaux);border-radius:2px;cursor:pointer;min-height:40px}
+.steuer button.an{background:var(--bordeaux);color:var(--papier)}
+.raster{max-width:1100px;margin:0 auto;padding:16px 16px 48px;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px;justify-items:center}
+figure{margin:0;width:100%;max-width:320px}
+figcaption{margin-top:14px}
+figcaption b{font-family:"Cinzel",Georgia,serif;font-weight:600;color:var(--bordeaux);font-size:15px;letter-spacing:.03em;display:block;margin-bottom:4px}
+figcaption span{font-size:14.5px;line-height:1.45;color:var(--tinte)}
+figcaption i{display:block;margin-top:6px;font-size:13px;color:var(--muted)}
+
+/* Handy */
+.handy{position:relative;width:100%;aspect-ratio:300/620;border-radius:42px;background:#111;padding:9px;box-shadow:0 18px 40px rgba(38,20,15,.25)}
+.screen{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:var(--papier)}
+.scroll{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;padding:118px 22px 40px}
+.scroll::-webkit-scrollbar{display:none}
+.scroll h2{font-family:"Cinzel",Georgia,serif;font-weight:600;font-size:19px;color:var(--bordeaux);margin:22px 0 10px;letter-spacing:.02em}
+.scroll p{font-size:16px;line-height:1.5;margin:0 0 14px}
+
+/* Statusleiste */
+.status{position:absolute;left:0;right:0;top:0;height:47px;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:6px 26px 0 30px;font:600 14px -apple-system,system-ui,sans-serif;color:#000;pointer-events:none}
+.status .insel{position:absolute;left:50%;top:10px;width:96px;height:28px;margin-left:-48px;background:#000;border-radius:16px}
+.status .icons{display:flex;gap:5px;align-items:center}
+.status .icons i{display:block;width:4px;background:currentColor;border-radius:1px}
+.status .akku{width:22px;height:11px;border:1.5px solid currentColor;border-radius:3px;position:relative;opacity:.9}
+.status .akku::after{content:"";position:absolute;inset:1.5px 6px 1.5px 1.5px;background:currentColor;border-radius:1px}
+.hell .status{color:#fff}
+
+/* Filmband */
+.band{position:absolute;left:0;right:0;top:47px;height:56px;z-index:4;background:var(--bordeaux);
+  background-image:linear-gradient(to right,transparent 3px,var(--papier) 3px,var(--papier) 8.5px,transparent 8.5px),linear-gradient(to right,transparent 3px,var(--papier) 3px,var(--papier) 8.5px,transparent 8.5px);
+  background-size:11.5px 4px,11.5px 4px;background-repeat:repeat-x;background-position:0 3.5px,0 calc(100% - 3.5px);
+  display:flex;align-items:center;justify-content:center;font-family:"Cinzel",Georgia,serif;font-weight:500;color:var(--papier);font-size:14.5px;letter-spacing:.04em}
+.band::before,.band::after{content:"";position:absolute;left:0;right:0;height:.5px;background:var(--blush);opacity:.55}
+.band::before{top:11px}.band::after{bottom:11px}
+
+/* Variante A: Bordeaux-Kappe */
+.v-a .kappe{position:absolute;left:0;right:0;top:0;height:47px;z-index:3;background:var(--bordeaux)}
+/* Variante B: Milchglas */
+.v-b .kappe{position:absolute;left:0;right:0;top:0;height:47px;z-index:3;background:rgba(238,230,214,.72);
+  -webkit-backdrop-filter:blur(12px) saturate(1.1);backdrop-filter:blur(12px) saturate(1.1);border-bottom:.5px solid rgba(38,20,15,.08)}
+/* Variante C: Papier-Verlauf */
+.v-c .kappe{position:absolute;left:0;right:0;top:0;height:47px;z-index:3;background:var(--papier)}
+.v-c .band{box-shadow:0 6px 14px -6px rgba(38,20,15,.35)}
+
+@media (prefers-reduced-motion:reduce){.steuer #auto{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Statusleiste beim Scrollen</h1>
+  <p>Drei Varianten für den Bereich über dem Filmband. Jedes Handy lässt sich einzeln scrollen.</p>
+  <div class="steuer"><button type="button" id="auto" class="an">Automatisch scrollen</button></div>
+</header>
+
+<main class="raster">
+  <figure>
+    <div class="handy v-a hell"><div class="screen">
+      <div class="scroll"></div><div class="kappe"></div><div class="band">THE GUEST BOOK</div>
+      <div class="status"><span>19:27</span><span class="insel"></span><span class="icons"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><span class="akku"></span></span></div>
+    </div></div>
+    <figcaption><b>A · Bordeaux-Kappe</b><span>Das Band reicht bis ganz nach oben, die Statusleiste liegt auf Bordeaux mit weisser Schrift. Kein Text ist mehr dahinter sichtbar.</span><i>Ruhig und klar, wirkt wie eine App. So war die Kappe ursprünglich gedacht.</i></figcaption>
+  </figure>
+  <figure>
+    <div class="handy v-b"><div class="screen">
+      <div class="scroll"></div><div class="kappe"></div><div class="band">THE GUEST BOOK</div>
+      <div class="status"><span>19:27</span><span class="insel"></span><span class="icons"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><span class="akku"></span></span></div>
+    </div></div>
+    <figcaption><b>B · Milchglas</b><span>Der Text gleitet weiterhin hinter die Statusleiste, wird dort aber weich verschwommen und papierfarben abgedeckt.</span><i>Leicht und luftig, nah am iPhone-Gefühl.</i></figcaption>
+  </figure>
+  <figure>
+    <div class="handy v-c"><div class="screen">
+      <div class="scroll"></div><div class="kappe"></div><div class="band">THE GUEST BOOK</div>
+      <div class="status"><span>19:27</span><span class="insel"></span><span class="icons"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><span class="akku"></span></span></div>
+    </div></div>
+    <figcaption><b>C · Papierstreifen</b><span>Über dem Band liegt ein deckender Streifen in Papierfarbe, das Band wirft einen leichten Schatten. Der Text verschwindet sauber darunter.</span><i>Am unauffälligsten, das Band wirkt wie auf das Papier gelegt.</i></figcaption>
+  </figure>
+</main>
+
+<script>
+(function(){
+  var text='<h2>Die Idee</h2><p>Wir interviewen die Menschen, die euch am besten kennen, und machen aus ihren Geschichten, Witzen und Ratschlägen einen Film, den ihr sonst nie bekommen würdet.</p><p>Der klassische Hochzeitsfilm zeigt die Zeremonie, die Reden und die schönsten Einstellungen des Tages. Was dabei oft fehlt, sind die Stimmen der Menschen, die den Tag zu dem gemacht haben, was er war: Freunde, Geschwister, Grosseltern, Trauzeugen.</p><p>Der Einstieg sind Interviews am Apéro, ergänzt durch das, was ihr zusätzlich wünscht: Gedanken vor der Zeremonie oder Interviews am Abend, wenn die Party läuft.</p><h2>Warum es so gut ankommt</h2><p>Location und Deko sind an dem Tag wichtig. Aber die Stimmen der Menschen, die ihr liebt, sind das, was ihr in Jahren wieder hören wollt.</p><p>Ursprünglich für Hochzeiten entwickelt, heute auch für private Feiern und Firmenanlässe buchbar.</p><p>Es ist Film, Content und Gästeunterhaltung in einem. Kein Ersatz für eure klassische Videografie oder Fotografie, sondern das Zusatzstück dazu.</p>';
+  var sc=[].slice.call(document.querySelectorAll('.scroll'));
+  sc.forEach(function(s){s.innerHTML=text+text;});
+  var ruhig=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var an=!ruhig,knopf=document.getElementById('auto'),pos=0,dir=1,last=0;
+  function setze(v){an=v;knopf.classList.toggle('an',v);knopf.textContent=v?'Automatisch scrollen':'Automatisch scrollen (aus)';}
+  knopf.addEventListener('click',function(){setze(!an);last=0;if(an)requestAnimationFrame(lauf);});
+  sc.forEach(function(s){['wheel','touchstart','pointerdown'].forEach(function(ev){s.addEventListener(ev,function(){if(an)setze(false);},{passive:true});});});
+  function lauf(t){
+    if(!an)return;
+    var dt=last?Math.min(50,t-last):16;last=t;
+    var max=sc[0].scrollHeight-sc[0].clientHeight;
+    pos+=dir*dt*0.045;
+    if(pos>max){pos=max;dir=-1;}if(pos<0){pos=0;dir=1;}
+    sc.forEach(function(s){s.scrollTop=pos;});
+    requestAnimationFrame(lauf);
+  }
+  if(an)requestAnimationFrame(lauf);else setze(false);
+})();
+</script>
+</body>
+</html>
