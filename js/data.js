@@ -131,6 +131,21 @@ const PROJECTS = [
     ],
     images: []
   },
+  {
+    slug: "showdance",
+    title: "Showdance",
+    subtitle: "Gymnastik-Gruppe Kreuzlingen",
+    category: "Showreel",
+    instagram: null,
+    year: "2026",
+    description: "Showdance with the Gymnastik-Gruppe Kreuzlingen — ensemble movement, stage light and energy, captured in motion.",
+    cover: "assets/posters/showdance-cover.jpg",
+    accent: ["#df8a5c", "#dfb95c", "#c2603f"],
+    images: [],
+    videos: [
+      { title: "Video", youtube: "sFUpBvnl9zw" }
+    ]
+  },
 ];
 
 /* ---------------------------------------------------------------------- */
